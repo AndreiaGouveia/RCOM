@@ -11,11 +11,24 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
+/*#define FLAG 0x7e
+#define A 0x03
+#define C_SET 0x03*/
+
+//unsigned char SET[5];
 
 volatile int STOP=FALSE;
 
 int main(int argc, char** argv)
 {
+
+//CRIACAO DO SET
+	/*SET[0]=FLAG;
+	SET[1]=A;
+	SET[2]=C_SET;
+	SET[3]=SET[1]^SET[2];*///BCC
+	//SET[4]=FLAG;
+
     int fd,c, res;
     struct termios oldtio,newtio;
     char buf[255];
@@ -27,6 +40,7 @@ int main(int argc, char** argv)
       printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
       exit(1);
     }
+	
 
   /*
     Open serial port device for reading and writing and not as controlling tty
@@ -64,9 +78,6 @@ int main(int argc, char** argv)
     }
 
     printf("New termios structure set\n");
-		
-	if(gets(buf)==NULL)
-		perror("gets not successful");
 	
 
    /* for (i = 0; i < 255; i++) {
@@ -75,9 +86,6 @@ int main(int argc, char** argv)
     
     /*testing*/
     //buf[25] = '\n';
-    
-    res = write(fd,buf,strlen(buf)+1);
-    printf("%d bytes written\n", res);
  
 
   /* 
@@ -86,16 +94,30 @@ int main(int argc, char** argv)
   */
 
 	while(STOP==FALSE){
+
+		if(gets(buf)==NULL)
+		perror("gets not successful");
+
+		//write 
+ 		res = write(fd,buf,strlen(buf)+1);
+		//res = write(fd,SET,5);
+    	printf("%d bytes written\n", res);
+		
+		//read
+		do{
 		res=read(fd,buf,1);
 		buf[res]='\0';
-		printf("%s\n",buf);}
+		printf("%s\n",buf);
+		} while(buf[0] != '\0');
+
+		if(buf[0]=='\0') STOP=TRUE;
+		}
    
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {
       perror("tcsetattr");
       exit(-1);
     }
 
-		
 	close(fd);
  
     return 0;
