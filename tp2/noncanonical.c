@@ -14,7 +14,71 @@
 #define FALSE 0
 #define TRUE 1
 
+#define FLAG 0x7e
+#define A 0x03
+#define C_SET 0x03
+#define BCC A^C_SET
+
 volatile int STOP=FALSE;
+
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[]) {
+	switch(*state) {
+	
+	case 0:
+	 if(byte_received == FLAG) {
+		SET[*state] = byte_received;		
+		*state=1;
+		}
+	break;
+	case 1:
+	if (byte_received == A) {
+		SET[*state] = byte_received;		
+		*state=2;
+		
+	}
+	else if (byte_received != FLAG)
+		*state=0;
+	break;
+	case 2:
+	if (byte_received == C_SET) {
+		SET[*state] = byte_received;
+		*state=3;
+		
+	}
+	else if (byte_received == FLAG) {
+		*state=1;
+	}
+	else 
+		*state=0;
+	break;
+	case 3:
+	if (byte_received == BCC) {
+		SET[*state] = byte_received;
+		*state=4;
+	}
+	else if (byte_received == FLAG) {
+		*state=1;
+	}
+	else 
+		*state=0;
+	break;
+
+	case 4:
+		SET[*state] = byte_received;
+		*state=5;
+	break;
+	case 5:
+	if (byte_received == FLAG) {
+		SET[*state] = byte_received;
+		*state=6;
+	}
+	else
+		*state = 0;
+	break;
+
+}
+
+}
 
 int main(int argc, char** argv)
 {
@@ -73,7 +137,7 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
-	unsigned char SET[5];
+	unsigned char SET[255];
 	int n=0;
 
     while (STOP==FALSE) {       /* loop for input */
@@ -81,16 +145,18 @@ int main(int argc, char** argv)
   	/* so we can printf... */
       	printf("%x\n", buf[0]);
 
-        SET[n]=buf[0];
-        n++;
+	stateMachine(&n, buf[0], SET);
+    
 	
-      	if (n == 5) STOP=TRUE;
-    }
+      	if (n == 6){
+		STOP = TRUE;
+	} 
+	}
 	
 
-	write(fd, SET, 5);
-
-	sleep(3);
+	write(fd, SET, n);
+	
+	sleep(1);
 
 
   /* 

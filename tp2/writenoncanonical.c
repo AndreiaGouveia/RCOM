@@ -18,19 +18,28 @@
 #define A 0x03
 #define C_SET 0x03
 
-unsigned char SET[5];
+unsigned char SET[255];
 
 volatile int STOP=FALSE;
 
-unsigned char buf[5];
+unsigned char buf[255];
 
 int FLAG_ALARM = 1;
 int count_ALARM = 0;
 int fd,c, res;
 
+void getBCC2(unsigned char * data, int sizeData, unsigned char BBC2){
+
+	BBC2 = 0x00;
+	for(int i = 0; i < sizeData; i++){
+		BBC2 = BBC2 ^ data[i];
+	}
+
+}
+
 
 void send() {
-	res = write(fd,SET,5);
+	res = write(fd,SET,6);
 	printf("%d bytes written\n", res);
 }
 
@@ -46,7 +55,7 @@ if(FLAG_ALARM == 1 && count_ALARM <= 3)
 		alarm(3);}
 		count_ALARM++;
 	}
-		
+
 }
 
 int main(int argc, char** argv)
@@ -56,22 +65,23 @@ int main(int argc, char** argv)
 	SET[0]=FLAG;
 	SET[1]=A;
 	SET[2]=C_SET;
-	SET[3]=SET[1]^SET[2];//BCC
-	SET[4]=FLAG;
+	SET[3]=SET[1]^SET[2];//BCC1
+	getBCC2(NULL, 0, SET[4]);
+	SET[5]=FLAG;
 
-   
+
     struct termios oldtio,newtio;
     int i, sum = 0, speed = 0;
 	(void) signal(SIGALRM, atende);
 
-    
-    if ( (argc < 2) || 
-  	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
-  	      (strcmp("/dev/ttyS4", argv[1])!=0) )) {//aqui a portas so é 4 em vez de 1 pq o pc pede o 4
+
+    if ( (argc < 2) ||
+  	     ((strcmp("/dev/ttyS0", argv[1])!=0) &&
+  	      (strcmp("/dev/ttyS4", argv[1])!=0) )) {//aqui a portas so ï¿½ 4 em vez de 1 pq o pc pede o 4
       printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
       exit(1);
     }
-	
+
 
   /*
     Open serial port device for reading and writing and not as controlling tty
@@ -96,9 +106,9 @@ int main(int argc, char** argv)
 
     newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
     newtio.c_cc[VMIN]     = 1;   /* blocking read until 5 chars received */
-  /* 
-    VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) próximo(s) caracter(es)
+  /*
+    VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a
+    leitura do(s) prï¿½ximo(s) caracter(es)
   */
 
     tcflush(fd, TCIOFLUSH); //fazer fluish antes de mandar cenas
@@ -109,17 +119,17 @@ int main(int argc, char** argv)
     }
 
     printf("New termios structure set\n");
- 
 
-  /* 
-    O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar 
-    o indicado no guião 
+
+  /*
+    O ciclo FOR e as instruï¿½ï¿½es seguintes devem ser alterados de modo a respeitar
+    o indicado no guiï¿½o
   */
 
 		send();
 		alarm (3);
-		//write 
-		
+		//write
+
 		int n=0;
 
 		//read
@@ -133,21 +143,29 @@ int main(int argc, char** argv)
 		res=read(fd,&buf[n],1);
 
 		if(res != -1)
+			{
 			FLAG_ALARM = 0;
+			//signal(SIGALRM, SIG_IGN);
+			}
 		else
 			continue;
-		
-		printf("%x\n",buf[n]);
-		n++;
-		} while (n<5);
 
-   
+		printf("%x\n",buf[n]);
+
+		if(n != 0){
+			if(buf[n] == FLAG)
+				break;
+		}
+		n++;
+
+	} while (1);
+
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {
       perror("tcsetattr");
       exit(-1);
     }
 
 	close(fd);
- 
+
     return 0;
 }
