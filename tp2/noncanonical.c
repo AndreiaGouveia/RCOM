@@ -77,8 +77,8 @@ int main(int argc, char** argv)
 	int n=0;
 
     while (STOP==FALSE) {       /* loop for input */
-res = read(fd,buf,1);   /* returns after 5 chars have been input */           
-  /* so we can printf... */
+	res = read(fd,buf,1);   /* returns after 5 chars have been input */           
+  	/* so we can printf... */
       	printf("%x\n", buf[0]);
 
         SET[n]=buf[0];
@@ -88,8 +88,9 @@ res = read(fd,buf,1);   /* returns after 5 chars have been input */
     }
 	
 
-write(fd, SET, 5);
+	write(fd, SET, 5);
 
+	sleep(3);
 
 
   /* 

@@ -1,5 +1,4 @@
 /*Non-Canonical Input Processing*/
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -8,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"
@@ -22,14 +22,31 @@ unsigned char SET[5];
 
 volatile int STOP=FALSE;
 
-int flag=1,conta=1;
+unsigned char buf[5];
 
-void atende()
-{
-	printf("alarme # %d\n", conta);
-	flag=1;
-	conta++;
-	
+int FLAG_ALARM = 1;
+int count_ALARM = 0;
+int fd,c, res;
+
+
+void send() {
+	res = write(fd,SET,5);
+	printf("%d bytes written\n", res);
+}
+
+void atende() {
+
+printf("atendeu\n");
+
+if(FLAG_ALARM == 1 && count_ALARM <= 3)
+	{
+
+		if (count_ALARM < 3)
+		{send();
+		alarm(3);}
+		count_ALARM++;
+	}
+		
 }
 
 int main(int argc, char** argv)
@@ -42,10 +59,11 @@ int main(int argc, char** argv)
 	SET[3]=SET[1]^SET[2];//BCC
 	SET[4]=FLAG;
 
-    int fd,c, res;
+   
     struct termios oldtio,newtio;
-    unsigned char buf[5];
     int i, sum = 0, speed = 0;
+	(void) signal(SIGALRM, atende);
+
     
     if ( (argc < 2) || 
   	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
@@ -60,7 +78,7 @@ int main(int argc, char** argv)
     because we don't want to get killed if linenoise sends CTRL-C.
   */
 
-    fd = open(argv[1], O_RDWR | O_NOCTTY );
+    fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd <0) {perror(argv[1]); exit(-1); }
 
     if ( tcgetattr(fd,&oldtio) == -1) { /* save current port settings */
@@ -91,25 +109,37 @@ int main(int argc, char** argv)
     }
 
     printf("New termios structure set\n");
+ 
 
   /* 
     O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar 
     o indicado no guião 
   */
 
-		printf("set: %x\n", SET[0]);
-		res = write(fd,SET,5);
-    	printf("%d bytes written\n", res);
+		send();
+		alarm (3);
+		//write 
 		
+		int n=0;
 
-		int n = 0;
 		//read
 		do{
-		res=read(fd,buf,1);
-		printf("%x\n",buf[0]);
 
+		if(count_ALARM >= 4){
+			printf("Didn't get a response. BYE!\n");
+			break;
+		}
+
+		res=read(fd,&buf[n],1);
+
+		if(res != -1)
+			FLAG_ALARM = 0;
+		else
+			continue;
+		
+		printf("%x\n",buf[n]);
 		n++;
-		} while(n<5);
+		} while (n<5);
 
    
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {
