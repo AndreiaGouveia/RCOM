@@ -1,5 +1,26 @@
 #include "sendDataPacket.h"
 
+int count_ALARM = 0;
+int fd;
+unsigned char * set;
+int sizeData;
+
+void atende()
+{
+
+    printf("atendeu\n");
+
+    if (count_ALARM < 3)
+    {
+
+        int res = write(fd, set, sizeData + 6);
+        printf("%d bytes written\n", res);
+
+        alarm(3);
+    }
+    count_ALARM++;
+}
+
 void getBCC2(unsigned char *data, int sizeData, unsigned char BBC2)
 {
 
@@ -10,7 +31,7 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char BBC2)
     }
 }
 
-void getSETDataPacket(unsigned char * set, unsigned char *data, int sizeData)
+void getSETDataPacket(unsigned char *data)
 {
     set = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
@@ -19,13 +40,51 @@ void getSETDataPacket(unsigned char * set, unsigned char *data, int sizeData)
     set[2] = C_SET;
     set[3] = set[1] ^ set[2]; //BCC1
 
-    getBCC2(data, sizeData, set[0]);
-    set[1] = FLAG;
+    //TO DO: put data in set
+
+    getBCC2(data, sizeData, set[4]);
+    set[5] = FLAG;
 }
 
-void sendDataPacket(int fd, unsigned char * set)
+void LLWRITE(int fileDiscriptor, unsigned char *data, int sizeDataReceived)
 {
-    int res = write(fd, set, 4);
+    fd=fileDiscriptor;
+    sizeData = sizeDataReceived;
+    unsigned char buf[255];
 
+    getSETDataPacket(data);
+
+    int res = write(fd, set, sizeData + 6);
     printf("%d bytes written\n", res);
+    alarm(3);
+
+    int n = 0;
+    do
+    {
+
+        //Checking if it has send more than 4 times the packet
+        if (count_ALARM >= 4)
+        {
+            printf("Didn't get a response. BYE!\n");
+            break;
+        }
+
+        res = read(fd, &buf[n], 1);
+
+        //If the read is successful cancels the alarm. If not it continues trying to read
+        if (res != -1)
+            alarm(0);
+        else
+            continue;
+
+        printf("%x\n", buf[n]);
+
+        if (n != 0)
+        {
+            if (buf[n] == FLAG)
+                break;
+        }
+        n++;
+
+    } while (1);
 }

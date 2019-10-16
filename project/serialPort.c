@@ -1,6 +1,6 @@
 #include "serialPort.h"
 
-int OpenSerialPort(int fd, struct termios *newtio, struct termios *oldtio)
+int LLOPEN(int fd, struct termios *newtio, struct termios *oldtio)
 {
   /*
     Open serial port device for reading and writing and not as controlling tty
@@ -41,7 +41,7 @@ int OpenSerialPort(int fd, struct termios *newtio, struct termios *oldtio)
   return 0;
 }
 
-int CloseSerialPort(int fd, struct termios *oldtio)
+int LLCLOSE(int fd, struct termios *oldtio)
 {
 
   if (tcsetattr(fd, TCSANOW, oldtio) == -1)

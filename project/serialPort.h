@@ -12,6 +12,6 @@
 #define BAUDRATE B38400
 
 
-int OpenSerialPort( int fd, struct termios * newtio, struct termios * oldtio);
+int LLOPEN( int fd, struct termios * newtio, struct termios * oldtio);
 
-int CloseSerialPort(int fd, struct termios * oldtio);
+int LLCLOSE(int fd, struct termios * oldtio);

@@ -21,26 +21,6 @@ volatile int STOP = FALSE;
 
 unsigned char buf[255];
 
-unsigned char * SET;
-
-int count_ALARM = 0;
-int fd, c, res;
-
-void atende()
-{
-
-	printf("atendeu\n");
-
-	if (count_ALARM < 3)
-	{
-
-		sendDataPacket(fd, SET);
-
-		alarm(3);
-	}
-	count_ALARM++;
-}
-
 int main(int argc, char **argv)
 {
 
@@ -58,52 +38,20 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
+	int fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
 	if (fd < 0)
 	{
 		perror(argv[1]);
 		exit(-1);
 	}
 
-	OpenSerialPort(fd, &newtio, &oldtio);
+	LLOPEN(fd, &newtio, &oldtio);
 
 	
-	getSETDataPacket(SET, NULL, 0);
 	//Sending First DataPacket
-	sendDataPacket(fd, SET);
-	alarm(3);
+	LLWRITE(fd, NULL, 0);
 
-	int n = 0;
-	do
-	{
-
-		//Checking if it has send more than 4 times the packet
-		if (count_ALARM >= 4)
-		{
-			printf("Didn't get a response. BYE!\n");
-			break;
-		}
-
-		res = read(fd, &buf[n], 1);
-
-		//If the read is successful cancels the alarm. If not it continues trying to read
-		if (res != -1)
-			alarm(0);
-		else
-			continue;
-
-		printf("%x\n", buf[n]);
-
-		if (n != 0)
-		{
-			if (buf[n] == FLAG)
-				break;
-		}
-		n++;
-
-	} while (1);
-
-	CloseSerialPort(fd, &oldtio);
+	LLCLOSE(fd, &oldtio);
 
 	return 0;
 }

@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
-	OpenSerialPort(fd, &newtio, &oldtio);
+	LLOPEN(fd, &newtio, &oldtio);
 
 	unsigned char SET[255];
 	int n = 0;
@@ -136,7 +136,7 @@ int main(int argc, char **argv)
 
 	sleep(1);
 
-	CloseSerialPort(fd, &oldtio);
+	LLCLOSE(fd, &oldtio);
 
 	return 0;
 }
