@@ -9,132 +9,123 @@
 #include <signal.h>
 
 #include "serialPort.h"
+#include "sendDataPacket.h"
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-#define FLAG 0x7e
-#define A 0x03
-#define C_SET 0x03
 
-unsigned char SET[255];
-
-volatile int STOP=FALSE;
+volatile int STOP = FALSE;
 
 unsigned char buf[255];
 
+unsigned char setInit[4];
+unsigned char setEnd[2];
+
 int FLAG_ALARM = 1;
 int count_ALARM = 0;
-int fd,c, res;
+int fd, c, res;
 
-void getBCC2(unsigned char * data, int sizeData, unsigned char BBC2){
+void atende()
+{
 
-	BBC2 = 0x00;
-	for(int i = 0; i < sizeData; i++){
-		BBC2 = BBC2 ^ data[i];
-	}
+	printf("atendeu\n");
 
-}
-
-
-void send() {
-	res = write(fd,SET,6);
-	printf("%d bytes written\n", res);
-}
-
-void atende() {
-
-printf("atendeu\n");
-
-if(FLAG_ALARM == 1 && count_ALARM <= 3)
+	if (FLAG_ALARM == 1 && count_ALARM <= 3)
 	{
 
 		if (count_ALARM < 3)
-		{send();
-		alarm(3);}
+		{
+
+			sendInitialDataPacket(fd, setInit);
+
+			sendEndDataPacket(fd, setEnd);
+			
+			alarm(3);
+		}
 		count_ALARM++;
 	}
-
 }
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 
-//CRIACAO DO SET
-	SET[0]=FLAG;
-	SET[1]=A;
-	SET[2]=C_SET;
-	SET[3]=SET[1]^SET[2];//BCC1
-	getBCC2(NULL, 0, SET[4]);
-	SET[5]=FLAG;
+	//CRIACAO DO SET
 
+	getSETOfInitialDataPacket(setInit);
+	getSETOfFinalDataPacket(setEnd, NULL, 0);
 
-    struct termios oldtio,newtio;
-    int i, sum = 0, speed = 0;
-	(void) signal(SIGALRM, atende);
+	struct termios oldtio, newtio;
+	int i, sum = 0, speed = 0;
 
+	(void)signal(SIGALRM, atende);
 
-    if ( (argc < 2) ||
-  	     ((strcmp("/dev/ttyS0", argv[1])!=0) &&
-  	      (strcmp("/dev/ttyS1", argv[1])!=0)  && (strcmp("/dev/ttyS2", argv[1])!=0) &&
-  	      (strcmp("/dev/ttyS4", argv[1])!=0) )) {
-      printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
-      exit(1);
-    }
-	
-  	fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
-      if (fd < 0)
+	if ((argc < 2) ||
+		((strcmp("/dev/ttyS0", argv[1]) != 0) &&
+		 (strcmp("/dev/ttyS1", argv[1]) != 0) && (strcmp("/dev/ttyS2", argv[1]) != 0) &&
+		 (strcmp("/dev/ttyS4", argv[1]) != 0)))
+	{
+		printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
+		exit(1);
+	}
+
+	fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
+	if (fd < 0)
 	{
 		perror(argv[1]);
 		exit(-1);
 	}
 
 	OpenSerialPort(fd, &newtio, &oldtio);
-  
 
-
-  /*
+	/*
     O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar
     o indicado no gui�o
   */
 
-		send();
-		alarm (3);
-		//write
+	sendInitialDataPacket(fd, setInit);
 
-		int n=0;
+	sendEndDataPacket(fd, setEnd);
 
-		//read
-		do{
+	alarm(3);
+	//write
 
-		if(count_ALARM >= 4){
+	int n = 0;
+
+	//read
+	do
+	{
+
+		if (count_ALARM >= 4)
+		{
 			printf("Didn't get a response. BYE!\n");
 			break;
 		}
 
-		res=read(fd,&buf[n],1);
+		res = read(fd, &buf[n], 1);
 
-		if(res != -1)
-			{
+		if (res != -1)
+		{
 			FLAG_ALARM = 0;
 			//signal(SIGALRM, SIG_IGN);
-			}
+		}
 		else
 			continue;
 
-		printf("%x\n",buf[n]);
+		printf("%x\n", buf[n]);
 
-		if(n != 0){
-			if(buf[n] == FLAG)
+		if (n != 0)
+		{
+			if (buf[n] == FLAG)
 				break;
 		}
 		n++;
 
 	} while (1);
 
-    CloseSerialPort(fd, &oldtio);
+	CloseSerialPort(fd, &oldtio);
 
-    return 0;
+	return 0;
 }
