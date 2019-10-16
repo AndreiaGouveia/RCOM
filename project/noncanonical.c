@@ -130,8 +130,7 @@ int main(int argc, char **argv)
 		printf("%x\n", buf[0]);
 
 		stateMachine(&n, buf[0], SET, &sizeMessage);
-		printf("size: %d\n", sizeMessage);
-		
+
 		if (n == 6)
 		{
 			STOP = TRUE;
