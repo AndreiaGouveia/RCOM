@@ -24,7 +24,6 @@ unsigned char buf[255];
 unsigned char setInit[4];
 unsigned char setEnd[2];
 
-int FLAG_ALARM = 1;
 int count_ALARM = 0;
 int fd, c, res;
 
@@ -33,20 +32,16 @@ void atende()
 
 	printf("atendeu\n");
 
-	if (FLAG_ALARM == 1 && count_ALARM <= 3)
+	if (count_ALARM < 3)
 	{
 
-		if (count_ALARM < 3)
-		{
+		sendInitialDataPacket(fd, setInit);
 
-			sendInitialDataPacket(fd, setInit);
+		sendEndDataPacket(fd, setEnd);
 
-			sendEndDataPacket(fd, setEnd);
-			
-			alarm(3);
-		}
-		count_ALARM++;
+		alarm(3);
 	}
+	count_ALARM++;
 }
 
 int main(int argc, char **argv)
@@ -80,24 +75,16 @@ int main(int argc, char **argv)
 
 	OpenSerialPort(fd, &newtio, &oldtio);
 
-	/*
-    O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar
-    o indicado no gui�o
-  */
-
+	//Sending First DataPacket
 	sendInitialDataPacket(fd, setInit);
-
 	sendEndDataPacket(fd, setEnd);
-
 	alarm(3);
-	//write
 
 	int n = 0;
-
-	//read
 	do
 	{
 
+		//Checking if it has send more than 4 times the packet
 		if (count_ALARM >= 4)
 		{
 			printf("Didn't get a response. BYE!\n");
@@ -106,11 +93,9 @@ int main(int argc, char **argv)
 
 		res = read(fd, &buf[n], 1);
 
+		//If the read is successful cancels the alarm. If not it continues trying to read
 		if (res != -1)
-		{
-			FLAG_ALARM = 0;
-			//signal(SIGALRM, SIG_IGN);
-		}
+			alarm(0);
 		else
 			continue;
 
