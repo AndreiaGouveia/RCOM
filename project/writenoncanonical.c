@@ -21,8 +21,7 @@ volatile int STOP = FALSE;
 
 unsigned char buf[255];
 
-unsigned char setInit[4];
-unsigned char setEnd[2];
+unsigned char * SET;
 
 int count_ALARM = 0;
 int fd, c, res;
@@ -35,9 +34,7 @@ void atende()
 	if (count_ALARM < 3)
 	{
 
-		sendInitialDataPacket(fd, setInit);
-
-		sendEndDataPacket(fd, setEnd);
+		sendDataPacket(fd, SET);
 
 		alarm(3);
 	}
@@ -46,11 +43,6 @@ void atende()
 
 int main(int argc, char **argv)
 {
-
-	//CRIACAO DO SET
-
-	getSETOfInitialDataPacket(setInit);
-	getSETOfFinalDataPacket(setEnd, NULL, 0);
 
 	struct termios oldtio, newtio;
 	int i, sum = 0, speed = 0;
@@ -75,9 +67,10 @@ int main(int argc, char **argv)
 
 	OpenSerialPort(fd, &newtio, &oldtio);
 
+	
+	getSETDataPacket(SET, NULL, 0);
 	//Sending First DataPacket
-	sendInitialDataPacket(fd, setInit);
-	sendEndDataPacket(fd, setEnd);
+	sendDataPacket(fd, SET);
 	alarm(3);
 
 	int n = 0;

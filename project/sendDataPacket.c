@@ -10,32 +10,22 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char BBC2)
     }
 }
 
-void getSETOfFinalDataPacket(unsigned char set[2], unsigned char *data, int sizeData)
+void getSETDataPacket(unsigned char * set, unsigned char *data, int sizeData)
 {
-
-    getBCC2(data, sizeData, set[0]);
-    set[1] = FLAG;
-}
-
-void getSETOfInitialDataPacket(unsigned char set[4])
-{
+    set = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
     set[0] = FLAG;
     set[1] = A;
     set[2] = C_SET;
     set[3] = set[1] ^ set[2]; //BCC1
+
+    getBCC2(data, sizeData, set[0]);
+    set[1] = FLAG;
 }
 
-void sendInitialDataPacket(int fd, unsigned char set[4])
+void sendDataPacket(int fd, unsigned char * set)
 {
     int res = write(fd, set, 4);
 
-    printf("%d bytes written\n", res);
-}
-
-void sendEndDataPacket(int fd,  unsigned char set[2])
-{
-
-    int res = write(fd, set, 2);
     printf("%d bytes written\n", res);
 }

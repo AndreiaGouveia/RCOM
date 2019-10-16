@@ -11,6 +11,6 @@
 #define A 0x03
 #define C_SET 0x03
 
-void sendInitialDataPacket(int fd, unsigned char set[4]);
+void getSETDataPacket(unsigned char * set, unsigned char *data, int sizeData);
 
-void sendEndDataPacket(int fd, unsigned char set[2]);
+void sendDataPacket(int fd, unsigned char * set);
