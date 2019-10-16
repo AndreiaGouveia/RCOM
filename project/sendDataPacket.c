@@ -21,13 +21,13 @@ void atende()
     count_ALARM++;
 }
 
-void getBCC2(unsigned char *data, int sizeData, unsigned char BBC2)
+void getBCC2(unsigned char *data, int sizeData, unsigned char * BBC2)
 {
 
-    BBC2 = 0x00;
+    *BBC2 = 0x00;
     for (int i = 0; i < sizeData; i++)
     {
-        BBC2 = BBC2 ^ data[i];
+        *BBC2 = *BBC2 ^ data[i];
     }
 }
 
@@ -41,9 +41,9 @@ void getSETDataPacket(unsigned char *data)
     set[3] = set[1] ^ set[2]; //BCC1
 
     for(int i = 1; i <= sizeData; i++)
-        set[i + 3] = data[i];
+        set[i + 3] = data[i - 1];
 
-    getBCC2(data, sizeData, set[sizeData + 4]);
+    getBCC2(data, sizeData, &set[sizeData + 4]);
     set[sizeData + 5] = FLAG;
 }
 

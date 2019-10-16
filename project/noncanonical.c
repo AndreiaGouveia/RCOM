@@ -21,9 +21,24 @@
 #define C_SET 0x03
 #define BCC A ^ C_SET
 
-volatile int STOP = FALSE;
+int checkBCC2(unsigned char SET[], int sizeMessage)
+{
+	
+	unsigned char BCC2 = 0x00;
 
-void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int * sizeMessage)
+	for (int i = 4; i < sizeMessage - 2; i++)
+	{
+
+		BCC2 ^= SET[i];
+	}
+
+	if (BCC2 == SET[sizeMessage - 2])
+		return TRUE;
+	else
+		return FALSE;
+}
+
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
 {
 	switch (*state)
 	{
@@ -76,17 +91,16 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		*state = 5;
 		break;
 	case 5:
+		SET[*sizeMessage] = byte_received;
+
 		if (byte_received == FLAG)
 		{
-			SET[*sizeMessage] = byte_received;
 			*state = 6;
 		}
 		else
 			*state = 5;
 		break;
-
 	}
-
 
 	(*sizeMessage)++;
 }
@@ -123,7 +137,7 @@ int main(int argc, char **argv)
 	int n = 0;
 	int sizeMessage = 0;
 
-	while (STOP == FALSE)
+	while (1)
 	{							/* loop for input */
 		res = read(fd, buf, 1); /* returns after 5 chars have been input */
 								/* so we can printf... */
@@ -133,9 +147,14 @@ int main(int argc, char **argv)
 
 		if (n == 6)
 		{
-			STOP = TRUE;
+			break;
 		}
 	}
+
+	if (checkBCC2(SET, sizeMessage))
+		printf("Received the info correctly!\n");
+	else
+		printf("Something went wrong and the BCC2 is not correct!\n");
 
 	write(fd, SET, sizeMessage);
 
