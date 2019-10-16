@@ -40,10 +40,11 @@ void getSETDataPacket(unsigned char *data)
     set[2] = C_SET;
     set[3] = set[1] ^ set[2]; //BCC1
 
-    //TO DO: put data in set
+    for(int i = 1; i <= sizeData; i++)
+        set[i + 3] = data[i];
 
-    getBCC2(data, sizeData, set[4]);
-    set[5] = FLAG;
+    getBCC2(data, sizeData, set[sizeData + 4]);
+    set[sizeData + 5] = FLAG;
 }
 
 void LLWRITE(int fileDiscriptor, unsigned char *data, int sizeDataReceived)

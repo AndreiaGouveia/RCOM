@@ -23,7 +23,7 @@
 
 volatile int STOP = FALSE;
 
-void stateMachine(int *state, unsigned char byte_received, unsigned char SET[])
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int * sizeMessage)
 {
 	switch (*state)
 	{
@@ -31,14 +31,14 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[])
 	case 0:
 		if (byte_received == FLAG)
 		{
-			SET[*state] = byte_received;
+			SET[*sizeMessage] = byte_received;
 			*state = 1;
 		}
 		break;
 	case 1:
 		if (byte_received == A)
 		{
-			SET[*state] = byte_received;
+			SET[*sizeMessage] = byte_received;
 			*state = 2;
 		}
 		else if (byte_received != FLAG)
@@ -47,7 +47,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[])
 	case 2:
 		if (byte_received == C_SET)
 		{
-			SET[*state] = byte_received;
+			SET[*sizeMessage] = byte_received;
 			*state = 3;
 		}
 		else if (byte_received == FLAG)
@@ -60,7 +60,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[])
 	case 3:
 		if (byte_received == BCC)
 		{
-			SET[*state] = byte_received;
+			SET[*sizeMessage] = byte_received;
 			*state = 4;
 		}
 		else if (byte_received == FLAG)
@@ -72,19 +72,23 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[])
 		break;
 
 	case 4:
-		SET[*state] = byte_received;
+		SET[*sizeMessage] = byte_received;
 		*state = 5;
 		break;
 	case 5:
 		if (byte_received == FLAG)
 		{
-			SET[*state] = byte_received;
+			SET[*sizeMessage] = byte_received;
 			*state = 6;
 		}
 		else
-			*state = 0;
+			*state = 5;
 		break;
+
 	}
+
+
+	(*sizeMessage)++;
 }
 
 int main(int argc, char **argv)
@@ -117,6 +121,7 @@ int main(int argc, char **argv)
 
 	unsigned char SET[255];
 	int n = 0;
+	int sizeMessage = 0;
 
 	while (STOP == FALSE)
 	{							/* loop for input */
@@ -124,15 +129,16 @@ int main(int argc, char **argv)
 								/* so we can printf... */
 		printf("%x\n", buf[0]);
 
-		stateMachine(&n, buf[0], SET);
-
+		stateMachine(&n, buf[0], SET, &sizeMessage);
+		printf("size: %d\n", sizeMessage);
+		
 		if (n == 6)
 		{
 			STOP = TRUE;
 		}
 	}
 
-	write(fd, SET, n);
+	write(fd, SET, sizeMessage);
 
 	sleep(1);
 

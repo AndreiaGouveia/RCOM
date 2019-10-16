@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 	
 	//Sending First DataPacket
-	LLWRITE(fd, NULL, 0);
+	LLWRITE(fd, "aqui", 5);
 
 	LLCLOSE(fd, &oldtio);
 
