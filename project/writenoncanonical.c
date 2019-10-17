@@ -47,9 +47,12 @@ int main(int argc, char **argv)
 
 	LLOPEN(fd, &newtio, &oldtio);
 
-	
+	char data[] = "aqui";
+
+    getSETDataPacket(data, 5);
+
 	//Sending First DataPacket
-	LLWRITE(fd, "aqui", 5);
+	LLWRITE(fd, data, 5);
 
 	LLCLOSE(fd, &oldtio);
 

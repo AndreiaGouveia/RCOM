@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "serialPort.h"
+#include "sendDataPacket.h"
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -18,12 +19,12 @@
 
 #define FLAG 0x7e
 #define A 0x03
-#define C_SET 0x03
+#define C_SET 0x30
 #define BCC A ^ C_SET
 
 int checkBCC2(unsigned char SET[], int sizeMessage)
 {
-	
+
 	unsigned char BCC2 = 0x00;
 
 	for (int i = 4; i < sizeMessage - 2; i++)
@@ -64,13 +65,15 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		{
 			SET[*sizeMessage] = byte_received;
 			*state = 3;
+
 		}
 		else if (byte_received == FLAG)
 		{
 			*state = 1;
 		}
 		else
-			*state = 0;
+			{*state = 0; 
+			printf("passou!\n");}
 		break;
 	case 3:
 		if (byte_received == BCC)
@@ -152,11 +155,15 @@ int main(int argc, char **argv)
 	}
 
 	if (checkBCC2(SET, sizeMessage))
+	{
+		receivedOK(fd, RR, buf[2]);
 		printf("Received the info correctly!\n");
+	}
 	else
-		printf("Something went wrong and the BCC2 is not correct!\n");
-
-	write(fd, SET, sizeMessage);
+		{
+			receivedOK(fd, REJ, buf[2]);
+			printf("Something went wrong and the BCC2 is not correct!\n");
+		}
 
 	sleep(1);
 

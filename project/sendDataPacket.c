@@ -31,7 +31,7 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char * BBC2)
     }
 }
 
-void getSETDataPacket(unsigned char *data)
+void getSETDataPacket(unsigned char *data, int sizeData)
 {
     set = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
@@ -53,7 +53,6 @@ void LLWRITE(int fileDiscriptor, unsigned char *data, int sizeDataReceived)
     sizeData = sizeDataReceived;
     unsigned char buf[255];
 
-    getSETDataPacket(data);
 
     int res = write(fd, set, sizeData + 6);
     printf("%d bytes written\n", res);
@@ -88,4 +87,97 @@ void LLWRITE(int fileDiscriptor, unsigned char *data, int sizeDataReceived)
         n++;
 
     } while (1);
+}
+
+void receivedOK(int fd, enum ControlField cf, unsigned char controlBit){
+
+    unsigned char sendDataPacket[5];
+
+    sendDataPacket[0] = FLAG;
+    sendDataPacket[1] = A;
+
+    switch (cf)
+    {
+    case SET:
+        sendDataPacket[2] = _SET;
+        break;
+    
+    case DISC:
+        sendDataPacket[2] = _DISC;
+        break;
+
+    case UA:
+        sendDataPacket[2] = _UA;
+        break;
+
+    case RR:
+        sendDataPacket[2] = _RR;
+
+        sendDataPacket[2] |= controlBit << 1;
+        break;
+
+    case REJ:
+        sendDataPacket[2] = _REJ;
+
+        
+        sendDataPacket[2] |= controlBit << 1;
+        break;
+    }
+
+    sendDataPacket[3] = sendDataPacket[1]^sendDataPacket[2];
+    sendDataPacket[4] = FLAG;
+
+
+	write(fd, sendDataPacket, 5);
+}
+
+
+long int findSize(FILE * fp) 
+{  
+     
+    fseek(fp, 0L, SEEK_END); 
+  
+    // calculating the size of the file 
+    long int res = ftell(fp); 
+  
+    // closing the file 
+    fclose(fp); 
+  
+    return res; 
+} 
+
+void getInitialEndDataPacket(FILE * fileToBeSent, char fileName[], unsigned char * initialSet, enum WhichControl cf){
+
+    //alocating the space for the initialSet
+    initialSet = (unsigned char *) malloc(6+6+strlen(fileName));
+
+    initialSet[0] = FLAG;
+    initialSet[1] = A;
+    initialSet[2] = C_SET;
+    initialSet[3] = A ^ C_SET;
+
+    if(cf == Begin)
+        initialSet[4] = 0x02;
+    else
+        initialSet[4] = 0x03;
+
+    //Size of file
+    initialSet[5] = 0x00;
+    initialSet[6] = 0x01;
+    initialSet[7] = findSize(fileToBeSent);
+
+    //Name of file
+    initialSet[8] = 0x01;
+    initialSet[9] = strlen(fileName);
+
+    for(int i = 0; i < strlen(fileName); i++)
+        initialSet[i + 10] = fileName[i];
+
+    //get bcc2
+
+    initialSet[strlen(fileName) + 11] = FLAG;
+    
+
+    
+
 }
