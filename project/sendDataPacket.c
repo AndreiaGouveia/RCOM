@@ -48,8 +48,6 @@ unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
     getBCC2(data, sizeData, &set[sizeData + 4]);
     set[sizeData + 5] = FLAG;
 
-    printf("print do set : %s", set);
-
     return set;
 }
 
@@ -81,7 +79,7 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
         else
             continue;
 
-        printf("%x\n", buf[n]);
+        printf("%0x\n", buf[n]);
 
         if (n != 0)
         {
