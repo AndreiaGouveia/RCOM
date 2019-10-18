@@ -34,7 +34,7 @@ int main(int argc, char **argv)
 		 (strcmp("/dev/ttyS1", argv[1]) != 0) && (strcmp("/dev/ttyS2", argv[1]) != 0) &&
 		 (strcmp("/dev/ttyS4", argv[1]) != 0)))
 	{
-		printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
+		printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1 name_of_file\n");
 		exit(1);
 	}
 
