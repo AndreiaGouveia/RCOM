@@ -31,7 +31,7 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char * BBC2)
     }
 }
 
-void getSETDataPacket(unsigned char *data, int sizeData)
+unsigned char * getSETDataPacket(unsigned char *data, int sizeData)
 {
     set = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
@@ -41,20 +41,24 @@ void getSETDataPacket(unsigned char *data, int sizeData)
     set[3] = set[1] ^ set[2]; //BCC1
 
     for(int i = 1; i <= sizeData; i++)
-        set[i + 3] = data[i - 1];
+        {
+            set[i + 3] = data[i - 1];
+        }
 
     getBCC2(data, sizeData, &set[sizeData + 4]);
     set[sizeData + 5] = FLAG;
+
+    printf("print do set : %s",set);
+
+    return set;
 }
 
-void LLWRITE(int fileDiscriptor, unsigned char *data, int sizeDataReceived)
+void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
 {
     fd=fileDiscriptor;
-    sizeData = sizeDataReceived;
     unsigned char buf[255];
 
-
-    int res = write(fd, set, sizeData + 6);
+    int res = write(fd, package, packageSize);
     printf("%d bytes written\n", res);
     alarm(3);
 
@@ -146,38 +150,53 @@ long int findSize(FILE * fp)
     return res; 
 } 
 
-void getInitialEndDataPacket(FILE * fileToBeSent, char fileName[], unsigned char * initialSet, enum WhichControl cf){
+unsigned char * getInitialEndDataPacket(FILE * fileToBeSent, char fileName[], enum WhichControl cf,int fileSize){
 
     //alocating the space for the initialSet
-    initialSet = (unsigned char *) malloc(6+6+strlen(fileName));
+    int initialSize =6*sizeof(unsigned char)+strlen(fileName);
+    printf("\n  Size of packetss : %d \n",initialSize);
+    unsigned char * initialSet = (unsigned char *) malloc(initialSize);
 
-    initialSet[0] = FLAG;
-    initialSet[1] = A;
-    initialSet[2] = C_SET;
-    initialSet[3] = A ^ C_SET;
-
-    if(cf == Begin)
-        initialSet[4] = 0x02;
+printf("\n size of initial set: %ld\n",strlen(initialSet));
+  if(cf == Begin)
+       { 
+           initialSet[0] = 0x02;
+           printf("\n on begin");
+       }
     else
-        initialSet[4] = 0x03;
+        initialSet[0] = 0x03;
 
     //Size of file
-    initialSet[5] = 0x00;
-    initialSet[6] = 0x01;
-    initialSet[7] = findSize(fileToBeSent);
+    initialSet[1] = 0x00;
+    initialSet[2] = 0x01;
+    initialSet[3] = fileSize;
 
     //Name of file
-    initialSet[8] = 0x01;
-    initialSet[9] = strlen(fileName);
+    initialSet[4] = 0x01;
+    initialSet[5] = strlen(fileName);
+    printf("\n size filename: %c",initialSet[9]);
 
     for(int i = 0; i < strlen(fileName); i++)
-        initialSet[i + 10] = fileName[i];
+        {
+            initialSet[i + 6] = fileName[i];
+            initialSet[strlen(fileName) + 10] ^= fileName[i]; //get bcc2
+        }
 
-    //get bcc2
+    printf("\n PACKET: %s\n",initialSet);
+    return initialSet;
+}
 
-    initialSet[strlen(fileName) + 11] = FLAG;
-    
+unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName)
+{
+    struct stat fileInfo;
 
-    
+    stat((char*)fileName,&fileInfo);//gets file info
 
+    (*size) = fileInfo.st_size;//gets size of file
+
+    unsigned char * fullData = (unsigned char *)malloc(*size);
+
+    fread(fullData,sizeof(unsigned char),*size,file);//reads file and store it in fullData
+
+    return fullData;
 }

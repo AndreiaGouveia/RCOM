@@ -150,20 +150,20 @@ int main(int argc, char **argv)
 
 		if (n == 6)
 		{
-			break;
+			if (checkBCC2(SET, sizeMessage))
+			{
+				receivedOK(fd, RR, buf[2]);
+				printf("Received the info correctly!\n");
+			}
+			else
+			{
+				receivedOK(fd, REJ, buf[2]);
+				printf("Something went wrong and the BCC2 is not correct!\n");
+			}
+			n = 0;
+			sizeMessage = 0;
 		}
 	}
-
-	if (checkBCC2(SET, sizeMessage))
-	{
-		receivedOK(fd, RR, buf[2]);
-		printf("Received the info correctly!\n");
-	}
-	else
-		{
-			receivedOK(fd, REJ, buf[2]);
-			printf("Something went wrong and the BCC2 is not correct!\n");
-		}
 
 	sleep(1);
 

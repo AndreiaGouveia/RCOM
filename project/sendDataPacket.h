@@ -22,9 +22,10 @@ enum ControlField{SET, DISC, UA, RR, REJ};
 
 enum WhichControl{Begin, End};
 
-void LLWRITE(int fd, unsigned char *data, int sizeData);
+void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize);
 void atende();
 
-void getInitialEndDataPacket(FILE * fileToBeSent, unsigned char * initialSet, enum WhichControl cf);
-void getSETDataPacket(unsigned char *data, int sizeData);
+unsigned char * getInitialEndDataPacket(FILE * fileToBeSent, char fileName[], enum WhichControl cf,int fileSize);
+unsigned char * getSETDataPacket(unsigned char *data, int sizeData);
 void receivedOK(int fileDiscriptor, enum ControlField cf, unsigned char controlBit);
+unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName);
