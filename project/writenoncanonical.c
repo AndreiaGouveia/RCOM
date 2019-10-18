@@ -58,8 +58,6 @@ int main(int argc, char **argv)
 	//storing info
 	size_t fileSize;
 	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
-	//test
-	printf("\n data : %s, with size of %ld\n", fullData, fileSize);
 
 	LLOPEN(fd, &newtio, &oldtio);
 
@@ -75,22 +73,22 @@ int main(int argc, char **argv)
 	unsigned char *dataPacket;
 	int indice = 0;
 
-	for (size_t i = 0; i < fileSize; i += 100)
+	for (size_t i = 0; i < fileSize; i += SIZE_DATA)
 	{
-		dataPacket = getSETDataPacket(*fullData[i], 100);
+		dataPacket = getSETDataPacket(&fullData[i], SIZE_DATA);
 
-		LLWRITE(fd, dataPacket, 100);
+		LLWRITE(fd, dataPacket, SIZE_DATA + 6);
 
-		for (int j = i; j < 100; j++)
+		for (int j = i; j < SIZE_DATA + 6; j++)
 			printf("%0x\n", dataPacket[j]);
 
 		if (i + 100 >= fileSize)
 		{
-			dataPacket = getSETDataPacket(*fullData[i], fileSize - i);
+			dataPacket = getSETDataPacket(&fullData[i], fileSize - i);
 
-			LLWRITE(fd, dataPacket, fileSize - i);
+			LLWRITE(fd, dataPacket, fileSize - i + 6);
 
-			for (int j = i; j < fileSize - i; j++)
+			for (int j = i; j < fileSize - i + 6; j++)
 				printf("%0x\n", dataPacket[j]);
 		}
 	}
