@@ -41,8 +41,8 @@ int checkBCC2(unsigned char SET[], int sizeMessage)
 
 void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
 {
-	SET[*sizeMessage] = byte_received;
-	/*
+	//SET[*sizeMessage] = byte_received;
+	
 	switch (*state)
 	{
 
@@ -105,7 +105,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		else
 			*state = 5;
 		break;
-	}*/
+	}
 
 	(*sizeMessage)++;
 }
