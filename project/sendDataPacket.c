@@ -41,17 +41,25 @@ unsigned char * getSETDataPacket(unsigned char *data, int sizeData)
     setBefore[2] = C_SET;
     setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
 
-    
-    
-    printf("aqui\n");
-
     for (int i = 1; i <= sizeData; i++)
     {
         setBefore[i + 3] = data[i - 1];
     }
 
+    
+    
+    printf("aqui\n");
+
     getBCC2(data, sizeData, &set[sizeData + 4]);
+
+    
+    
+    printf("aqui\n");
     setBefore[sizeData + 5] = FLAG;
+
+    
+    
+    printf("aqui\n");
 
     return setBefore;
 }
