@@ -63,8 +63,10 @@ int main(int argc, char **argv)
 
 	//=====Send Start====  DA ERRO DE SEGMENTATION FAULT :( )
 	unsigned char * start;
-	start = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
-	LLWRITE(fd, start, 6 * sizeof(unsigned char) + strlen(argv[2]));
+	startData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
+	int sizeStartData = 6 + strlen(argv[2]);
+	unsigned char * setStart = getSETDataPacket(startData, sizeStartData)
+	LLWRITE(fd, setStart, 6 + sizeStartData);
 
 	//=====Send FILE Data=====
 	unsigned char tempData[100];
