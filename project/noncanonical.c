@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 	LLREAD(fd, initialDataPacket, &sizeInitialDataPacket);
 
 	//FILE IS COMING
-	While(TRUE)
+	while(TRUE)
 	{
 
 		unsigned char *dataPacket;
