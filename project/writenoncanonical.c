@@ -9,7 +9,7 @@
 #include <signal.h>
 
 #include "serialPort.h"
-#include "sendDataPacket.h"
+#include "writerDataPacket.h"
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"

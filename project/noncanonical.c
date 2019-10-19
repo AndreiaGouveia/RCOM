@@ -10,7 +10,8 @@
 #include <unistd.h>
 
 #include "serialPort.h"
-#include "sendDataPacket.h"
+#include "writerDataPacket.h"
+#include "receiverDataPacket.h"
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -21,93 +22,6 @@
 #define A 0x03
 #define C_SET 0x30
 #define BCC A ^ C_SET
-
-int checkBCC2(unsigned char SET[], int sizeMessage)
-{
-
-	unsigned char BCC2 = 0x00;
-
-	for (int i = 4; i < sizeMessage - 2; i++)
-	{
-
-		BCC2 ^= SET[i];
-	}
-
-	if (BCC2 == SET[sizeMessage - 2])
-		return TRUE;
-	else
-		return FALSE;
-}
-
-void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
-{
-
-	switch (*state)
-	{
-
-	case 0:
-		if (byte_received == FLAG)
-		{
-			SET[*sizeMessage] = byte_received;
-			*state = 1;
-		}
-		break;
-	case 1:
-		if (byte_received == A)
-		{
-			SET[*sizeMessage] = byte_received;
-			*state = 2;
-		}
-		else if (byte_received != FLAG)
-			*state = 0;
-		break;
-	case 2:
-		if (byte_received == C_SET)
-		{
-			SET[*sizeMessage] = byte_received;
-			*state = 3;
-		}
-		else if (byte_received == FLAG)
-		{
-			*state = 1;
-		}
-		else
-		{
-			*state = 0;
-		}
-		break;
-	case 3:
-		if (byte_received == BCC)
-		{
-			SET[*sizeMessage] = byte_received;
-			*state = 4;
-		}
-		else if (byte_received == FLAG)
-		{
-			*state = 1;
-		}
-		else
-			*state = 0;
-		break;
-
-	case 4:
-		SET[*sizeMessage] = byte_received;
-		*state = 5;
-		break;
-	case 5:
-		SET[*sizeMessage] = byte_received;
-
-		if (byte_received == FLAG)
-		{
-			*state = 6;
-		}
-		else
-			*state = 5;
-		break;
-	}
-
-	(*sizeMessage)++;
-}
 
 int main(int argc, char **argv)
 {

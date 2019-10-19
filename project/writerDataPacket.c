@@ -1,4 +1,4 @@
-#include "sendDataPacket.h"
+#include "writerDataPacket.h"
 
 int count_ALARM = 0;
 int fd;
@@ -95,46 +95,7 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
     } while (1);
 }
 
-void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
-{
 
-    unsigned char sendDataPacket[5];
-
-    sendDataPacket[0] = FLAG;
-    sendDataPacket[1] = A;
-
-    switch (cf)
-    {
-    case SET:
-        sendDataPacket[2] = _SET;
-        break;
-
-    case DISC:
-        sendDataPacket[2] = _DISC;
-        break;
-
-    case UA:
-        sendDataPacket[2] = _UA;
-        break;
-
-    case RR:
-        sendDataPacket[2] = _RR;
-
-        sendDataPacket[2] |= controlBit << 1;
-        break;
-
-    case REJ:
-        sendDataPacket[2] = _REJ;
-
-        sendDataPacket[2] |= controlBit << 1;
-        break;
-    }
-
-    sendDataPacket[3] = sendDataPacket[1] ^ sendDataPacket[2];
-    sendDataPacket[4] = FLAG;
-
-    write(fd, sendDataPacket, 5);
-}
 
 long int findSize(FILE *fp)
 {
@@ -236,44 +197,3 @@ int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing){
     return 0;
 }
 
-int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffing, int * sizeAfterDestuffing){
-
-    //allocating necessary space
-    (* afterDestuffing) = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
-
-    //INITIAl FLAGs
-    (* afterDestuffing)[0] = SET[0];
-
-    //current position on the afterStuffing array
-    int currentPositionOfDestuffing = 1;
-
-    //Size of the afterStuffing array
-    int newSize=sizeSET;
-
-    for(int i = 1; i < sizeSET-1; i++, currentPositionOfDestuffing++){
-
-        if(SET[i] == STUFFING)
-        {
-            newSize -= 2;
-            (* afterDestuffing)=realloc((* afterDestuffing), newSize);
-
-            (* afterDestuffing)[currentPositionOfDestuffing] = SET[i+1] ^ EXCLUSIVE_OR_STUFFING;
-
-            //Advance the second argument of XOR
-            i++;
-
-        }else
-        {
-            (* afterDestuffing)[currentPositionOfDestuffing]=SET[i];
-        }
-        
-    }
-
-    
-    //END FLAG
-    (* afterDestuffing)[newSize-1] = SET[sizeSET - 1];
-
-    *sizeAfterDestuffing=newSize;
-
-    return 0;
-}

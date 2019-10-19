@@ -2,6 +2,7 @@
     "files.associations": {
         "stdlib.h": "c",
         "types.h": "c",
-        "fcntl.h": "c"
+        "fcntl.h": "c",
+        "writerdatapacket.h": "c"
     }
 }
