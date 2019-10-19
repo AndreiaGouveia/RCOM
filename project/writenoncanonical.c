@@ -71,9 +71,8 @@ int main(int argc, char **argv)
 	unsigned char * setStart = getSETDataPacket(startData, sizeStartData);
 
 	
-    printf("aqui\n");
 	LLWRITE(fd, setStart, 6 + sizeStartData);
-/*
+
 	//=====Send FILE Data=====
 	unsigned char tempData[100];
 	unsigned char *dataPacket;
@@ -98,7 +97,7 @@ int main(int argc, char **argv)
 				printf("%0x\n", dataPacket[j]);
 		}
 	}
-*/
+
 	LLCLOSE(fd, &oldtio);
 
 	return 0;

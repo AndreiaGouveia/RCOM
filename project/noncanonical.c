@@ -148,7 +148,7 @@ int main(int argc, char **argv)
 
 		stateMachine(&n, buf[0], SET, &sizeMessage);
 
-		if (n == 6 || sizeMessage == 106)
+		if (n == 6)
 		{
 			if (checkBCC2(SET, sizeMessage))
 			{
