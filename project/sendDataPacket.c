@@ -48,14 +48,14 @@ unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
     getBCC2(data, sizeData, &set[sizeData + 4]);
     setBefore[sizeData + 5] = FLAG;
 
-    return set;
+    return setBefore;
 }
 
 void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
 {
     fd = fileDiscriptor;
     unsigned char buf[255];
-    
+
     stuffing(package, packageSize, set, &sizeSet);
 
     int res = write(fd, set, sizeSet);
