@@ -167,7 +167,7 @@ int main(int argc, char **argv)
 			destuffing(SET, sizeMessage, afterDestuffing, &sizeAfterDestuffing);
 			
 			for(int i = 0; i < sizeAfterDestuffing; i++)
-				printf("%x\n", SET[i]);
+				printf("%x\n", afterDestuffing[i]);
 
 				
 			n = 0;
