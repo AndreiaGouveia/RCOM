@@ -230,9 +230,14 @@ int stuffing(unsigned char * SET, int sizeSET, unsigned char * afterStuffing, in
         
     }
 
-    
     //END FLAG
     afterStuffing[newSize-1] = SET[sizeSET - 1];
+
+    printf("==================================STUFFING==================================");
+    for(int i = 0; i < newSize; i++){
+        printf("%0x\n", afterStuffing[i]);
+    }
+    
 
     *sizeAfterStuffing=newSize;
 
