@@ -58,17 +58,13 @@ int main(int argc, char **argv)
 	//storing info
 	size_t fileSize;
 	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
-	//test
-	printf("\n data : %s, with size of %ld\n", fullData, fileSize);
 
 	LLOPEN(fd, &newtio, &oldtio);
 
 	//=====Send Start====  DA ERRO DE SEGMENTATION FAULT :( )
-	/*unsigned char * start;
-	start = getInitialEndDataPacket(file, argv[2], Begin,(long int)fileSize);*/
-	//printf("\nsize:============%c=========\n",start[2]);
-	//LLWRITEstartEnd(fd, start, (int)strlen(start));
-	//LLWRITEstartEnd(fd, start, sizeof(start));
+	unsigned char * start;
+	start = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
+	LLWRITE(fd, start, 6 * sizeof(unsigned char) + strlen(argv[2]));
 
 	//=====Send FILE Data=====
 	unsigned char tempData[100];
