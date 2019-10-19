@@ -17,6 +17,9 @@
 #define _RR 0x05
 #define _REJ 0x01
 
+#define STUFFING 0x7d
+#define EXCLUSIVE_OR_STUFFING 0x20
+
 
 enum ControlField{SET, DISC, UA, RR, REJ}; 
 
@@ -29,3 +32,9 @@ unsigned char * getInitialEndDataPacket(FILE * fileToBeSent, char fileName[], en
 unsigned char * getSETDataPacket(unsigned char *data, int sizeData);
 void receivedOK(int fileDiscriptor, enum ControlField cf, unsigned char controlBit);
 unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName);
+
+
+
+int stuffing(unsigned char * SET, int sizeSET, unsigned char * afterStuffing, int * sizeAfterStuffing);
+
+int destuffing(unsigned char * SET, int sizeSET, unsigned char * afterDestuffing, int * sizeAfterDestuffing);

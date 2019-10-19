@@ -41,8 +41,7 @@ int checkBCC2(unsigned char SET[], int sizeMessage)
 
 void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
 {
-	//SET[*sizeMessage] = byte_received;
-	
+
 	switch (*state)
 	{
 
@@ -67,15 +66,16 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		{
 			SET[*sizeMessage] = byte_received;
 			*state = 3;
-
 		}
 		else if (byte_received == FLAG)
 		{
 			*state = 1;
 		}
 		else
-			{*state = 0; 
-			printf("passou!\n");}
+		{
+			*state = 0;
+			printf("passou!\n");
+		}
 		break;
 	case 3:
 		if (byte_received == BCC)
@@ -146,7 +146,6 @@ int main(int argc, char **argv)
 	{							/* loop for input */
 		res = read(fd, buf, 1); /* returns after 5 chars have been input */
 								/* so we can printf... */
-		printf("%x\n", buf[0]);
 
 		stateMachine(&n, buf[0], SET, &sizeMessage);
 
@@ -162,6 +161,15 @@ int main(int argc, char **argv)
 				receivedOK(fd, REJ, buf[2]);
 				printf("Something went wrong and the BCC2 is not correct!\n");
 			}
+
+			unsigned char *afterDestuffing;
+			int sizeAfterDestuffing;
+			destuffing(SET, sizeMessage, afterDestuffing, &sizeAfterDestuffing);
+			
+			for(int i = 0; i < sizeAfterDestuffing; i++)
+				printf("%x\n", SET[i]))
+
+				
 			n = 0;
 			sizeMessage = 0;
 		}

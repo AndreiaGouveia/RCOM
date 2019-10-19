@@ -56,7 +56,11 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
     fd = fileDiscriptor;
     unsigned char buf[255];
 
-    int res = write(fd, package, packageSize);
+    unsigned char * afterStuffing;
+    int sizeAfterStuffing;
+    stuffing(package, packageSize, afterStuffing, &sizeAfterStuffing);
+
+    int res = write(fd, afterStuffing, sizeAfterStuffing);
     printf("%d bytes written\n", res);
     alarm(3);
 
@@ -192,4 +196,87 @@ unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName)
     fread(fullData, sizeof(unsigned char), *size, file); //reads file and store it in fullData
 
     return fullData;
+}
+
+int stuffing(unsigned char * SET, int sizeSET, unsigned char * afterStuffing, int * sizeAfterStuffing){
+
+    //allocating necessary space
+    afterStuffing = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
+
+    //INITIAl FLAG
+    afterStuffing[0] = SET[0];
+
+    //current position on the afterStuffing array
+    int currentPositionOfStuffing = 1;
+
+    //Size of the afterStuffing array
+    int newSize=sizeSET;
+
+    for(int i = 1; i < sizeSET-1; i++, currentPositionOfStuffing++){
+
+        if(SET[i] == FLAG || SET[i] == STUFFING)
+        {
+            newSize += 2;
+            afterStuffing=realloc(afterStuffing, newSize);
+
+            afterStuffing[currentPositionOfStuffing]=STUFFING;
+            afterStuffing[currentPositionOfStuffing + 1] = SET[i] ^ EXCLUSIVE_OR_STUFFING;
+            currentPositionOfStuffing++;
+
+        }else
+        {
+            afterStuffing[currentPositionOfStuffing]=SET[i];
+        }
+        
+    }
+
+    
+    //END FLAG
+    afterStuffing[newSize-1] = SET[sizeSET - 1];
+
+    *sizeAfterStuffing=newSize;
+
+    return 0;
+}
+
+int destuffing(unsigned char * SET, int sizeSET, unsigned char * afterDestuffing, int * sizeAfterDestuffing){
+
+    //allocating necessary space
+    afterDestuffing = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
+
+    //INITIAl FLAGs
+    afterDestuffing[0] = SET[0];
+
+    //current position on the afterStuffing array
+    int currentPositionOfDestuffing = 1;
+
+    //Size of the afterStuffing array
+    int newSize=sizeSET;
+
+    for(int i = 1; i < sizeSET-1; i++, currentPositionOfDestuffing++){
+
+        if(SET[i] == STUFFING)
+        {
+            newSize -= 2;
+            afterDestuffing=realloc(afterDestuffing, newSize);
+
+            afterDestuffing[currentPositionOfDestuffing] = SET[i+1] ^ EXCLUSIVE_OR_STUFFING;
+
+            //Advance the second argument of XOR
+            i++;
+
+        }else
+        {
+            afterDestuffing[currentPositionOfDestuffing]=SET[i];
+        }
+        
+    }
+
+    
+    //END FLAG
+    afterDestuffing[newSize-1] = SET[sizeSET - 1];
+
+    *sizeAfterDestuffing=newSize;
+
+    return 0;
 }
