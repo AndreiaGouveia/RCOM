@@ -35,6 +35,6 @@ unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName);
 
 
 
-int stuffing(unsigned char * SET, int sizeSET, unsigned char * afterStuffing, int * sizeAfterStuffing);
+int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing);
 
-int destuffing(unsigned char * SET, int sizeSET, unsigned char * afterDestuffing, int * sizeAfterDestuffing);
+int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffing, int * sizeAfterDestuffing);

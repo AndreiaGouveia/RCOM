@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 
 			unsigned char *afterDestuffing;
 			int sizeAfterDestuffing;
-			destuffing(SET, sizeMessage, afterDestuffing, &sizeAfterDestuffing);
+			destuffing(SET, sizeMessage, &afterDestuffing, &sizeAfterDestuffing);
 			
 			for(int i = 0; i < sizeAfterDestuffing; i++)
 				printf("%0x\n", afterDestuffing[i]);

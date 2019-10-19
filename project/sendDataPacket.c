@@ -58,7 +58,7 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
     fd = fileDiscriptor;
     unsigned char buf[255];
 
-    stuffing(package, packageSize, set, &sizeSet);
+    stuffing(package, packageSize);
 
     int res = write(fd, set, sizeSet);
     printf("%d bytes written\n", res);
@@ -198,65 +198,51 @@ unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName)
     return fullData;
 }
 
-int stuffing(unsigned char * SET, int sizeSET, unsigned char * afterStuffing, int * sizeAfterStuffing){
+int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing){
 
     //allocating necessary space
-    afterStuffing = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
+    set = (unsigned char *) malloc(sizeof(unsigned char) * sizeBeforeStuffing);
 
     //INITIAl FLAG
-    afterStuffing[0] = SET[0];
+    set[0] = beforeStuffing[0];
 
     //current position on the afterStuffing array
     int currentPositionOfStuffing = 1;
 
     //Size of the afterStuffing array
-    int newSize=sizeSET;
+    sizeSet=sizeBeforeStuffing;
 
-    for(int i = 1; i < sizeSET-1; i++, currentPositionOfStuffing++){
+    for(int i = 1; i < sizeBeforeStuffing-1; i++, currentPositionOfStuffing++){
 
-        if(SET[i] == FLAG || SET[i] == STUFFING)
+        if(beforeStuffing[i] == FLAG || beforeStuffing[i] == STUFFING)
         {
-            newSize += 2;
-            afterStuffing=realloc(afterStuffing, newSize);
+            sizeSet += 2;
+            set=realloc(set, sizeSet);
 
-            afterStuffing[currentPositionOfStuffing]=STUFFING;
-            afterStuffing[currentPositionOfStuffing + 1] = SET[i] ^ EXCLUSIVE_OR_STUFFING;
+            set[currentPositionOfStuffing]=STUFFING;
+            set[currentPositionOfStuffing + 1] = beforeStuffing[i] ^ EXCLUSIVE_OR_STUFFING;
             currentPositionOfStuffing++;
 
         }else
         {
-            afterStuffing[currentPositionOfStuffing]=SET[i];
+            set[currentPositionOfStuffing]=beforeStuffing[i];
         }
         
     }
 
     //END FLAG
-    afterStuffing[newSize-1] = SET[sizeSET - 1];
-
-    printf("==================================STUFFING==================================");
-    for(int i = 0; i < newSize; i++){
-        printf("%0x\n", afterStuffing[i]);
-    }
-
-    printf("==================================BEFORE STUFFING===========================");
-    for(int i = 0; i < sizeSET; i++){
-        printf("%0x\n", SET[i]);
-    }
-
-    
-
-    *sizeAfterStuffing=newSize;
+    set[sizeSet-1] = beforeStuffing[sizeBeforeStuffing- 1];
 
     return 0;
 }
 
-int destuffing(unsigned char * SET, int sizeSET, unsigned char * afterDestuffing, int * sizeAfterDestuffing){
+int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffing, int * sizeAfterDestuffing){
 
     //allocating necessary space
-    afterDestuffing = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
+    (* afterDestuffing) = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
 
     //INITIAl FLAGs
-    afterDestuffing[0] = SET[0];
+    (* afterDestuffing)[0] = SET[0];
 
     //current position on the afterStuffing array
     int currentPositionOfDestuffing = 1;
@@ -269,23 +255,23 @@ int destuffing(unsigned char * SET, int sizeSET, unsigned char * afterDestuffing
         if(SET[i] == STUFFING)
         {
             newSize -= 2;
-            afterDestuffing=realloc(afterDestuffing, newSize);
+            (* afterDestuffing)=realloc(afterDestuffing, newSize);
 
-            afterDestuffing[currentPositionOfDestuffing] = SET[i+1] ^ EXCLUSIVE_OR_STUFFING;
+            (* afterDestuffing)[currentPositionOfDestuffing] = SET[i+1] ^ EXCLUSIVE_OR_STUFFING;
 
             //Advance the second argument of XOR
             i++;
 
         }else
         {
-            afterDestuffing[currentPositionOfDestuffing]=SET[i];
+            (* afterDestuffing)[currentPositionOfDestuffing]=SET[i];
         }
         
     }
 
     
     //END FLAG
-    afterDestuffing[newSize-1] = SET[sizeSET - 1];
+    (* afterDestuffing)[newSize-1] = SET[sizeSET - 1];
 
     *sizeAfterDestuffing=newSize;
 
