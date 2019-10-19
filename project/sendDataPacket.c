@@ -3,7 +3,7 @@
 int count_ALARM = 0;
 int fd;
 unsigned char *set;
-int sizeData;
+int sizeSet;
 
 void atende()
 {
@@ -13,7 +13,7 @@ void atende()
     if (count_ALARM < 3)
     {
 
-        int res = write(fd, set, sizeData + 6);
+        int res = write(fd, set, sizeSet);
         printf("%d bytes written\n", res);
 
         alarm(3);
@@ -33,20 +33,20 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
 
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
 {
-    set = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
+    unsigned char * setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
-    set[0] = FLAG;
-    set[1] = A;
-    set[2] = C_SET;
-    set[3] = set[1] ^ set[2]; //BCC1
+    setBefore[0] = FLAG;
+    setBefore[1] = A;
+    setBefore[2] = C_SET;
+    setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
 
     for (int i = 1; i <= sizeData; i++)
     {
-        set[i + 3] = data[i - 1];
+        setBefore[i + 3] = data[i - 1];
     }
 
     getBCC2(data, sizeData, &set[sizeData + 4]);
-    set[sizeData + 5] = FLAG;
+    setBefore[sizeData + 5] = FLAG;
 
     return set;
 }
@@ -55,12 +55,10 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
 {
     fd = fileDiscriptor;
     unsigned char buf[255];
+    
+    stuffing(package, packageSize, set, &sizeSet);
 
-    unsigned char * afterStuffing;
-    int sizeAfterStuffing = 0;
-    stuffing(package, packageSize, afterStuffing, &sizeAfterStuffing);
-
-    int res = write(fd, afterStuffing, sizeAfterStuffing);
+    int res = write(fd, set, sizeSet);
     printf("%d bytes written\n", res);
     alarm(3);
 
