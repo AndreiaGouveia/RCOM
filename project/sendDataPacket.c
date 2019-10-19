@@ -46,7 +46,7 @@ unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
     }
 
     getBCC2(data, sizeData, &set[sizeData + 4]);
-    setBefore[sizeData + 5] = FLAG
+    setBefore[sizeData + 5] = FLAG;
 
     return setBefore;
 }
