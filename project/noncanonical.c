@@ -55,16 +55,16 @@ int main(int argc, char **argv)
 	int sizeInitialDataPacket = 0;
 
 	//Initial DataPacket (ther real information is coming after this one)
-	LLWRITE(fd, initialDataPacket, sizeInitialDataPacket);
+	LLREAD(fd, initialDataPacket, &sizeInitialDataPacket);
 
 	//FILE IS COMING
-	While(true)
+	While(TRUE)
 	{
 
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
-		LLWRITE(fd, dataPacket, sizeDataPacket);
+		LLREAD(fd, dataPacket, &sizeDataPacket);
 	}
 
 	sleep(1);
