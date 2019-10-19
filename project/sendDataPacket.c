@@ -237,6 +237,12 @@ int stuffing(unsigned char * SET, int sizeSET, unsigned char * afterStuffing, in
     for(int i = 0; i < newSize; i++){
         printf("%0x\n", afterStuffing[i]);
     }
+
+    printf("==================================BEFORE STUFFING===========================");
+    for(int i = 0; i < sizeSET; i++){
+        printf("%0x\n", SET[i]);
+    }
+
     
 
     *sizeAfterStuffing=newSize;
