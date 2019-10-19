@@ -74,7 +74,6 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		else
 		{
 			*state = 0;
-			printf("passou!\n");
 		}
 		break;
 	case 3:

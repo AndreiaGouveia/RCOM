@@ -57,7 +57,7 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
     unsigned char buf[255];
 
     unsigned char * afterStuffing;
-    int sizeAfterStuffing;
+    int sizeAfterStuffing = 0;
     stuffing(package, packageSize, afterStuffing, &sizeAfterStuffing);
 
     int res = write(fd, afterStuffing, sizeAfterStuffing);
