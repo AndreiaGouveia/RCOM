@@ -33,17 +33,17 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
 
 unsigned char * getSETDataPacket(unsigned char *data, int sizeData)
 {
-    
-    printf("aqui\n");
     unsigned char * setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
-    
-    printf("aqui\n");
 
     setBefore[0] = FLAG;
     setBefore[1] = A;
     setBefore[2] = C_SET;
     setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
+
+    
+    
+    printf("aqui\n");
 
     for (int i = 1; i <= sizeData; i++)
     {
