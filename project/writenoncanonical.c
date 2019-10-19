@@ -61,7 +61,7 @@ int main(int argc, char **argv)
 
 	LLOPEN(fd, &newtio, &oldtio);
 
-	//=====Send Start====  DA ERRO DE SEGMENTATION FAULT :( )
+	//=====Send Start====
 	unsigned char * startData;
 	
 	startData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
@@ -97,6 +97,20 @@ int main(int argc, char **argv)
 				printf("%0x\n", dataPacket[j]);
 		}
 	}
+	/*
+	//=====Send FINAL====
+	unsigned char * endData;
+	
+	endData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
+
+	int sizeEndData = 6 + strlen(argv[2]);
+
+	unsigned char * setStart = getSETDataPacket(endData, sizeEndData);
+
+	
+	LLWRITE(fd, setStart, 6 + sizeEndData);*/
+
+
 
 	LLCLOSE(fd, &oldtio);
 
