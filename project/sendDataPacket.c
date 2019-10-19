@@ -171,15 +171,18 @@ unsigned char *getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum
     //Name of file
     initialSet[4] = 0x01;
     initialSet[5] = strlen(fileName);
-    printf("\n size filename: %c", initialSet[9]);
+    printf("Size of filename: %c", initialSet[5]);
 
     for (int i = 0; i < strlen(fileName); i++)
     {
         initialSet[i + 6] = fileName[i];
-        initialSet[strlen(fileName) + 10] ^= fileName[i]; //get bcc2
     }
 
-    printf("\n PACKET: %s\n", initialSet);
+    printf("PACKET:\n");
+
+    for(int i = 0; i < 6 + strlen(fileName); i++)
+        printf("%0x\n", initialSet[i]);
+
     return initialSet;
 }
 
