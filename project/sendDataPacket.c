@@ -255,7 +255,7 @@ int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffi
         if(SET[i] == STUFFING)
         {
             newSize -= 2;
-            (* afterDestuffing)=realloc(afterDestuffing, newSize);
+            (* afterDestuffing)=realloc((* afterDestuffing), newSize);
 
             (* afterDestuffing)[currentPositionOfDestuffing] = SET[i+1] ^ EXCLUSIVE_OR_STUFFING;
 
