@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 	LLOPEN(fd, &newtio, &oldtio);
 
 	//=====Send Start====  DA ERRO DE SEGMENTATION FAULT :( )
-	unsigned char * start;
+	unsigned char * startData;
 	startData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
 	int sizeStartData = 6 + strlen(argv[2]);
 	unsigned char * setStart = getSETDataPacket(startData, sizeStartData);
