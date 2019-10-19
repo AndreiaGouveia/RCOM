@@ -64,12 +64,9 @@ int main(int argc, char **argv)
 	//=====Send Start====  DA ERRO DE SEGMENTATION FAULT :( )
 	unsigned char * startData;
 	
-    printf("aqui\n");
 	startData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
 
 	int sizeStartData = 6 + strlen(argv[2]);
-	
-    printf("aqui\n");
 
 	unsigned char * setStart = getSETDataPacket(startData, sizeStartData);
 
