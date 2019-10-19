@@ -38,3 +38,5 @@ int checkBCC2(unsigned char SET[], int sizeMessage);
 
 
 void receivedOK(int fileDiscriptor, enum ControlField cf, unsigned char controlBit);
+
+int LLREAD(int fd, unsigned char * dataPacket, int *sizeDataPacket);

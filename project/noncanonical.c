@@ -51,40 +51,20 @@ int main(int argc, char **argv)
 
 	LLOPEN(fd, &newtio, &oldtio);
 
-	unsigned char SET[255];
-	int n = 0;
-	int sizeMessage = 0;
+	unsigned char *initialDataPacket;
+	int sizeInitialDataPacket = 0;
 
-	while (1)
-	{							/* loop for input */
-		res = read(fd, buf, 1); /* returns after 5 chars have been input */
-								/* so we can printf... */
+	//Initial DataPacket (ther real information is coming after this one)
+	LLWRITE(fd, initialDataPacket, sizeInitialDataPacket);
 
-		stateMachine(&n, buf[0], SET, &sizeMessage);
+	//FILE IS COMING
+	While(true)
+	{
 
-		if (n == 6)
-		{
-			if (checkBCC2(SET, sizeMessage))
-			{
-				receivedOK(fd, RR, buf[2]);
-				printf("Received the info correctly!\n");
-			}
-			else
-			{
-				receivedOK(fd, REJ, buf[2]);
-				printf("Something went wrong and the BCC2 is not correct!\n");
-			}
+		unsigned char *dataPacket;
+		int sizeDataPacket = 0;
 
-			unsigned char *afterDestuffing;
-			int sizeAfterDestuffing;
-			destuffing(SET, sizeMessage, &afterDestuffing, &sizeAfterDestuffing);
-			
-			for(int i = 0; i < sizeAfterDestuffing; i++)
-				printf("%0x\n", afterDestuffing[i]);
-				
-			n = 0;
-			sizeMessage = 0;
-		}
+		LLWRITE(fd, dataPacket, sizeDataPacket);
 	}
 
 	sleep(1);

@@ -1,45 +1,45 @@
 #include "receiverDataPacket.h"
 
-int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffing, int * sizeAfterDestuffing){
+int destuffing(unsigned char *SET, int sizeSET, unsigned char **afterDestuffing, int *sizeAfterDestuffing)
+{
 
-    //allocating necessary space
-    (* afterDestuffing) = (unsigned char *) malloc(sizeof(unsigned char) * sizeSET);
+	//allocating necessary space
+	(*afterDestuffing) = (unsigned char *)malloc(sizeof(unsigned char) * sizeSET);
 
-    //INITIAl FLAGs
-    (* afterDestuffing)[0] = SET[0];
+	//INITIAl FLAGs
+	(*afterDestuffing)[0] = SET[0];
 
-    //current position on the afterStuffing array
-    int currentPositionOfDestuffing = 1;
+	//current position on the afterStuffing array
+	int currentPositionOfDestuffing = 1;
 
-    //Size of the afterStuffing array
-    int newSize=sizeSET;
+	//Size of the afterStuffing array
+	int newSize = sizeSET;
 
-    for(int i = 1; i < sizeSET-1; i++, currentPositionOfDestuffing++){
+	for (int i = 1; i < sizeSET - 1; i++, currentPositionOfDestuffing++)
+	{
 
-        if(SET[i] == STUFFING)
-        {
-            newSize -= 2;
-            (* afterDestuffing)=realloc((* afterDestuffing), newSize);
+		if (SET[i] == STUFFING)
+		{
+			newSize -= 2;
+			(*afterDestuffing) = realloc((*afterDestuffing), newSize);
 
-            (* afterDestuffing)[currentPositionOfDestuffing] = SET[i+1] ^ EXCLUSIVE_OR_STUFFING;
+			(*afterDestuffing)[currentPositionOfDestuffing] = SET[i + 1] ^ EXCLUSIVE_OR_STUFFING;
 
-            //Advance the second argument of XOR
-            i++;
+			//Advance the second argument of XOR
+			i++;
+		}
+		else
+		{
+			(*afterDestuffing)[currentPositionOfDestuffing] = SET[i];
+		}
+	}
 
-        }else
-        {
-            (* afterDestuffing)[currentPositionOfDestuffing]=SET[i];
-        }
-        
-    }
+	//END FLAG
+	(*afterDestuffing)[newSize - 1] = SET[sizeSET - 1];
 
-    
-    //END FLAG
-    (* afterDestuffing)[newSize-1] = SET[sizeSET - 1];
+	*sizeAfterDestuffing = newSize;
 
-    *sizeAfterDestuffing=newSize;
-
-    return 0;
+	return 0;
 }
 
 void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
@@ -132,40 +132,81 @@ int checkBCC2(unsigned char SET[], int sizeMessage)
 void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
 {
 
-    unsigned char sendDataPacket[5];
+	unsigned char sendDataPacket[5];
 
-    sendDataPacket[0] = FLAG;
-    sendDataPacket[1] = A;
+	sendDataPacket[0] = FLAG;
+	sendDataPacket[1] = A;
 
-    switch (cf)
-    {
-    case SET:
-        sendDataPacket[2] = _SET;
-        break;
+	switch (cf)
+	{
+	case SET:
+		sendDataPacket[2] = _SET;
+		break;
 
-    case DISC:
-        sendDataPacket[2] = _DISC;
-        break;
+	case DISC:
+		sendDataPacket[2] = _DISC;
+		break;
 
-    case UA:
-        sendDataPacket[2] = _UA;
-        break;
+	case UA:
+		sendDataPacket[2] = _UA;
+		break;
 
-    case RR:
-        sendDataPacket[2] = _RR;
+	case RR:
+		sendDataPacket[2] = _RR;
 
-        sendDataPacket[2] |= controlBit << 1;
-        break;
+		sendDataPacket[2] |= controlBit << 1;
+		break;
 
-    case REJ:
-        sendDataPacket[2] = _REJ;
+	case REJ:
+		sendDataPacket[2] = _REJ;
 
-        sendDataPacket[2] |= controlBit << 1;
-        break;
-    }
+		sendDataPacket[2] |= controlBit << 1;
+		break;
+	}
 
-    sendDataPacket[3] = sendDataPacket[1] ^ sendDataPacket[2];
-    sendDataPacket[4] = FLAG;
+	sendDataPacket[3] = sendDataPacket[1] ^ sendDataPacket[2];
+	sendDataPacket[4] = FLAG;
 
-    write(fd, sendDataPacket, 5);
+	write(fd, sendDataPacket, 5);
+}
+
+int LLREAD(int fd, unsigned char * dataPacket, int *sizeDataPacket)
+{
+	int res = 0;
+	unsigned char buf[5];
+	
+	unsigned char SET[255];
+	int n = 0;
+	int sizeMessage = 0;
+
+	while (1)
+	{
+		res = read(fd, buf, 1);
+
+		stateMachine(&n, buf[0], SET, &sizeMessage);
+
+		if (n == 6)
+		{
+			if (checkBCC2(SET, sizeMessage))
+			{
+				receivedOK(fd, RR, buf[2]);
+				printf("Received the info correctly!\n");
+			}
+			else
+			{
+				receivedOK(fd, REJ, buf[2]);
+				printf("Something went wrong and the BCC2 is not correct!\n");
+			}
+
+			unsigned char *dataPacket;
+			int sizeDataPacket;
+			destuffing(SET, sizeMessage, &dataPacket, &sizeDataPacket);
+
+			for (int i = 0; i < sizeDataPacket; i++)
+				printf("%0x\n", dataPacket[i]);
+
+			break;
+		}
+	}
+
 }
