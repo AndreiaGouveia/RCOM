@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 	unsigned char * start;
 	startData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
 	int sizeStartData = 6 + strlen(argv[2]);
-	unsigned char * setStart = getSETDataPacket(startData, sizeStartData)
+	unsigned char * setStart = getSETDataPacket(startData, sizeStartData);
 	LLWRITE(fd, setStart, 6 + sizeStartData);
 
 	//=====Send FILE Data=====
