@@ -41,6 +41,8 @@ int checkBCC2(unsigned char SET[], int sizeMessage)
 
 void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
 {
+	SET[*sizeMessage] = byte_received;
+	/*
 	switch (*state)
 	{
 
@@ -103,7 +105,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		else
 			*state = 5;
 		break;
-	}
+	}*/
 
 	(*sizeMessage)++;
 }
@@ -148,7 +150,7 @@ int main(int argc, char **argv)
 
 		stateMachine(&n, buf[0], SET, &sizeMessage);
 
-		if (n == 6)
+		if (n == 6 || sizeMessage == 106)
 		{
 			if (checkBCC2(SET, sizeMessage))
 			{
