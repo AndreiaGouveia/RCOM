@@ -151,18 +151,17 @@ unsigned char *getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum
 
     //alocating the space for the initialSet
     int initialSize = 6 * sizeof(unsigned char) + strlen(fileName);
-    printf("\n  Size of packetss : %d \n", initialSize);
     unsigned char *initialSet = (unsigned char *)malloc(initialSize);
 
-    printf("\n size of initial set: %ld\n", strlen(initialSet));
     if (cf == Begin)
     {
         initialSet[0] = 0x02;
-        printf("\n on begin");
     }
     else
         initialSet[0] = 0x03;
 
+    //TYPE - LENGTH - VALUE
+    
     //Size of file
     initialSet[1] = 0x00;
     initialSet[2] = 0x01;
@@ -171,7 +170,7 @@ unsigned char *getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum
     //Name of file
     initialSet[4] = 0x01;
     initialSet[5] = strlen(fileName);
-    printf("Size of filename: %c", initialSet[5]);
+    printf("Size of filename: %d\n", initialSet[5]);
 
     for (int i = 0; i < strlen(fileName); i++)
     {
