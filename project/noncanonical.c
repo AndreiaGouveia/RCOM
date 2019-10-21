@@ -57,6 +57,14 @@ int main(int argc, char **argv)
 	//Initial DataPacket (ther real information is coming after this one)
 	LLREAD(fd, initialDataPacket, &sizeInitialDataPacket);
 
+	unsigned char * nameOfFile;
+	int sizeOfName = 0;
+	int sizeOfFile = 0;
+
+	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
+
+	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
+
 	//FILE IS COMING
 	while(TRUE)
 	{
@@ -65,6 +73,7 @@ int main(int argc, char **argv)
 		int sizeDataPacket = 0;
 
 		LLREAD(fd, dataPacket, &sizeDataPacket);
+
 	}
 
 	sleep(1);

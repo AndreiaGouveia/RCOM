@@ -170,11 +170,11 @@ void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
 	write(fd, sendDataPacket, 5);
 }
 
-int LLREAD(int fd, unsigned char * dataPacket, int *sizeDataPacket)
+int LLREAD(int fd, unsigned char *dataPacket, int *sizeDataPacket)
 {
 	int res = 0;
 	unsigned char buf[5];
-	
+
 	unsigned char SET[255];
 	int n = 0;
 	int sizeMessage = 0;
@@ -208,5 +208,42 @@ int LLREAD(int fd, unsigned char * dataPacket, int *sizeDataPacket)
 			break;
 		}
 	}
+}
 
+int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, unsigned char ** nameOfFile, int * sizeOfName, int * sizeOfFile)
+{
+
+	for (int i = 5; i < sizeInitialDataPacket; i++)
+	{
+
+		if (initialDataPacket[i] == 0x00)
+		{
+			int sizeOfValue = initialDataPacket[i + 1];
+			i++;
+
+			for (int j = i + 2; j < sizeOfValue && j < sizeInitialDataPacket; j++)
+			{
+
+				(*sizeOfFile) = (*sizeOfFile) << 8 * (j - i + 2);
+				(*sizeOfFile) |= initialDataPacket[j];
+				i++;
+			}
+		} else if(initialDataPacket[i] == 0x01){
+
+			*sizeOfName = initialDataPacket[i + 1];
+			i++;
+			
+			(*nameOfFile) = malloc(sizeof(unsigned char) * (*sizeOfName));
+
+			for (int j = i + 2; j < (*sizeOfName) && j < sizeInitialDataPacket; j++)
+			{
+
+				(*nameOfFile)[j - i + 2] = initialDataPacket[j];
+				i++;
+			}
+
+		}
+	}
+
+	return 0;
 }
