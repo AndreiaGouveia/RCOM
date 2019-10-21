@@ -65,6 +65,8 @@ int main(int argc, char **argv)
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
 
+	return 0;
+	
 	//FILE IS COMING
 	while(TRUE)
 	{
