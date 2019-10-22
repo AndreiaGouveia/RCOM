@@ -55,9 +55,9 @@ int main(int argc, char **argv)
 	int sizeInitialDataPacket = 0;
 
 	//Initial DataPacket (ther real information is coming after this one)
-	LLREAD(fd, initialDataPacket, &sizeInitialDataPacket);
+	LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket);
 
-	unsigned char * nameOfFile;
+	char * nameOfFile;
 	int sizeOfName = 0;
 	int sizeOfFile = 0;
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
-		LLREAD(fd, dataPacket, &sizeDataPacket);
+		LLREAD(fd, &dataPacket, &sizeDataPacket);
 
 	}
 

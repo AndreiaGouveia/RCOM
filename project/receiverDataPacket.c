@@ -6,16 +6,13 @@ int destuffing(unsigned char *SET, int sizeSET, unsigned char **afterDestuffing,
 	//allocating necessary space
 	(*afterDestuffing) = (unsigned char *)malloc(sizeof(unsigned char) * sizeSET);
 
-	//INITIAl FLAGs
-	(*afterDestuffing)[0] = SET[0];
-
 	//current position on the afterStuffing array
-	int currentPositionOfDestuffing = 1;
+	int currentPositionOfDestuffing = 0;
 
 	//Size of the afterStuffing array
 	int newSize = sizeSET;
 
-	for (int i = 1; i < sizeSET - 1; i++, currentPositionOfDestuffing++)
+	for (int i = 0; i < sizeSET; i++, currentPositionOfDestuffing++)
 	{
 
 		if (SET[i] == STUFFING)
@@ -33,9 +30,6 @@ int destuffing(unsigned char *SET, int sizeSET, unsigned char **afterDestuffing,
 			(*afterDestuffing)[currentPositionOfDestuffing] = SET[i];
 		}
 	}
-
-	//END FLAG
-	(*afterDestuffing)[newSize - 1] = SET[sizeSET - 1];
 
 	*sizeAfterDestuffing = newSize;
 
@@ -170,7 +164,7 @@ void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
 	write(fd, sendDataPacket, 5);
 }
 
-int LLREAD(int fd, unsigned char *dataPacket, int *sizeDataPacket)
+int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 {
 	int res = 0;
 	unsigned char buf[5];
@@ -198,19 +192,14 @@ int LLREAD(int fd, unsigned char *dataPacket, int *sizeDataPacket)
 				printf("Something went wrong and the BCC2 is not correct!\n");
 			}
 
-			unsigned char *dataPacket;
-			int sizeDataPacket;
-			destuffing(SET, sizeMessage, &dataPacket, &sizeDataPacket);
-
-			for (int i = 0; i < sizeDataPacket; i++)
-				printf("%0x\n", dataPacket[i]);
+			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
 
 			break;
 		}
 	}
 }
 
-int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, unsigned char ** nameOfFile, int * sizeOfName, int * sizeOfFile)
+int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char ** nameOfFile, int * sizeOfName, int * sizeOfFile)
 {
 
 	for (int i = 5; i < sizeInitialDataPacket; i++)
@@ -218,30 +207,36 @@ int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, uns
 
 		if (initialDataPacket[i] == 0x00)
 		{
-			int sizeOfValue = initialDataPacket[i + 1];
-			i++;
 
-			for (int j = i + 2; j < sizeOfValue && j < sizeInitialDataPacket; j++)
+			i++;
+			int sizeOfValue = initialDataPacket[i];
+
+			int offset = i + 1;
+
+			for (int j = offset; j < (sizeOfValue + offset) && j < sizeInitialDataPacket; j++)
 			{
 
-				(*sizeOfFile) = (*sizeOfFile) << 8 * (j - i + 2);
+				(*sizeOfFile) = (*sizeOfFile) << 8 * (j - offset);
 				(*sizeOfFile) |= initialDataPacket[j];
 				i++;
 			}
+
+
 		} else if(initialDataPacket[i] == 0x01){
 
-			*sizeOfName = initialDataPacket[i + 1];
 			i++;
-			
+			*sizeOfName = initialDataPacket[i];
+
+			int offset = i + 1;
+
 			(*nameOfFile) = malloc(sizeof(unsigned char) * (*sizeOfName));
 
-			for (int j = i + 2; j < (*sizeOfName) && j < sizeInitialDataPacket; j++)
+			for (int j = offset; j < ((*sizeOfName) + offset) && j < sizeInitialDataPacket; j++)
 			{
 
-				(*nameOfFile)[j - i + 2] = initialDataPacket[j];
+				(*nameOfFile)[j - offset] = initialDataPacket[j];
 				i++;
 			}
-
 		}
 	}
 
