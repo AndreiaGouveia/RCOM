@@ -148,8 +148,8 @@ void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
 	case RR:
 		sendDataPacket[2] = _RR;
 
-		//sendDataPacket[2] |= controlBit << 1;
-		//fiz isto pq nao temos o control bit direito e precisava de verificar no LLREAD se estava bem
+		sendDataPacket[2] |= controlBit << 1;
+		
 		break;
 
 	case REJ:
@@ -182,19 +182,21 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
 		if (n == 6)
 		{
-			if (checkBCC2(SET, sizeMessage))
+
+
+			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
+
+			if (checkBCC2(*dataPacket, *sizeDataPacket))
 			{
-				receivedOK(fd, RR, buf[2]);
+				receivedOK(fd, RR, SET[2]);
 				printf("Received the info correctly!\n");
 			}
 			else
 			{
-				receivedOK(fd, REJ, buf[2]);
+				receivedOK(fd, REJ, SET[2]);
 				printf("Something went wrong and the BCC2 is not correct!\n");
 				return 1;
 			}
-
-			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
 
 			break;
 		}

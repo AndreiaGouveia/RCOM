@@ -63,9 +63,13 @@ int main(int argc, char **argv)
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
-	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
+	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
 	
 	int infoRecieved = 0;
+
+	unsigned char *dataPacket;
+	int sizeDataPacket = 0;
+	int n = 0;
 
 	//FILE IS COMING
 	while(infoRecieved <= sizeOfFile)
@@ -74,21 +78,26 @@ int main(int argc, char **argv)
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
-		if(LLREAD(fd, &dataPacket, &sizeDataPacket)==0) 
-		{//se recebeu bem, conto como data recieved
-			infoRecieved += (sizeDataPacket-6);
-		}//caso nao, le outravez
-		printf("\n sizerecieved : %d\n",infoRecieved );//aquele print bonito para saber o quao mal esta a situacao :'( chorei
+
+		if(LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
+			infoRecieved += sizeDataPacket - 6;
+		
+		n++;
+
+		for(int i = 0; i < sizeDataPacket; i++)
+			printf("%0x ", dataPacket[i]);
+
+		printf("\nSize of the last data packet: %d\n", sizeDataPacket);
+		printf("Received so far: %d, %d\n\n", infoRecieved, n);
 
 	}
 
-	printf("GOT OUT OF CYCLE");//spoiler, ainda nao aconteceu :((((((
+	printf("GOT OUT OF CYCLE\n");
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	//end DataPacket (ther real information is coming after this one)
 	LLREAD(fd, &endDataPacket, &sizeEndDataPacket);
-
+	
 	getSizeFile(endDataPacket, sizeEndDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
 	
