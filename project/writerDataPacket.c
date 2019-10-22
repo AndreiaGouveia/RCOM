@@ -1,5 +1,7 @@
 #include "writerDataPacket.h"
 
+#include <math.h>
+
 int count_ALARM = 0;
 int fd;
 unsigned char *set;
@@ -111,37 +113,54 @@ long int findSize(FILE *fp)
     return res;
 }
 
-unsigned char *getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize)
+int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char ** initialSet, int * sizeInitialSet)
 {
+    
 
     //alocating the space for the initialSet
-    int initialSize = 6 * sizeof(unsigned char) + strlen(fileName);
-    unsigned char *initialSet = (unsigned char *)malloc(initialSize);
+    int sizeOfNumberFileSize = 2; // ceil(ln(fileSize, 2)/8.0);
+    int sizeOfName = strlen(fileName) + 1;
+    (*sizeInitialSet) = (sizeOfNumberFileSize + 5 + sizeOfName) * sizeof(unsigned char);
+    (*initialSet) = (unsigned char *)malloc((*sizeInitialSet));
 
     if (cf == Begin)
     {
-        initialSet[0] = 0x02;
+        (*initialSet)[0] = 0x02;
     }
     else
-        initialSet[0] = 0x03;
+        (*initialSet)[0] = 0x03;
 
     //TYPE - LENGTH - VALUE
     
     //Size of file
-    initialSet[1] = 0x00;
-    initialSet[2] = 0x01;
-    initialSet[3] = fileSize;
+    (*initialSet)[1] = 0x00;
+
+
+    (*initialSet)[2] = sizeOfNumberFileSize;
+
+    int i = (*initialSet)[2] + 2;
+    int n = 0;
+
+    while (i > 2) { 
+  
+        (*initialSet)[i] = (fileSize >> 8*n) & 0xFF;
+        
+        i--;
+        n++;
+    } 
+
+    int offset = (*initialSet)[2]+2;
 
     //Name of file
-    initialSet[4] = 0x01;
-    initialSet[5] = strlen(fileName);
+    (*initialSet)[1+offset] = 0x01;
+    (*initialSet)[2+offset] = sizeOfName;
 
-    for (int i = 0; i < strlen(fileName); i++)
+    for (int i = 0; i < sizeOfName; i++)
     {
-        initialSet[i + 6] = fileName[i];
+        (*initialSet)[i + 3 + offset] = fileName[i];
     }
 
-    return initialSet;
+    return 0;
 }
 
 unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName)
