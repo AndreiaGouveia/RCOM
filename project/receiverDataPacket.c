@@ -148,7 +148,8 @@ void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
 	case RR:
 		sendDataPacket[2] = _RR;
 
-		sendDataPacket[2] |= controlBit << 1;
+		//sendDataPacket[2] |= controlBit << 1;
+		//fiz isto pq nao temos o control bit direito e precisava de verificar no LLREAD se estava bem
 		break;
 
 	case REJ:
@@ -190,6 +191,7 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 			{
 				receivedOK(fd, REJ, buf[2]);
 				printf("Something went wrong and the BCC2 is not correct!\n");
+				return 1;
 			}
 
 			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
@@ -197,6 +199,8 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 			break;
 		}
 	}
+
+	return 0;
 }
 
 int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char ** nameOfFile, int * sizeOfName, int * sizeOfFile)

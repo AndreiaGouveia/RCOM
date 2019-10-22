@@ -64,20 +64,34 @@ int main(int argc, char **argv)
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
-
-	return 0;
 	
+	int infoRecieved = 0;
+
 	//FILE IS COMING
-	while(TRUE)
+	while(infoRecieved <= sizeOfFile)
 	{
 
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
-		LLREAD(fd, &dataPacket, &sizeDataPacket);
+		if(LLREAD(fd, &dataPacket, &sizeDataPacket)==0) 
+		{//se recebeu bem, conto como data recieved
+			infoRecieved += (sizeDataPacket-6);
+		}//caso nao, le outravez
+		printf("\n sizerecieved : %d\n",infoRecieved );//aquele print bonito para saber o quao mal esta a situacao :'( chorei
 
 	}
 
+	printf("GOT OUT OF CYCLE");//spoiler, ainda nao aconteceu :((((((
+	unsigned char *endDataPacket;
+	int sizeEndDataPacket = 0;
+
+	//end DataPacket (ther real information is coming after this one)
+	LLREAD(fd, &endDataPacket, &sizeEndDataPacket);
+
+	getSizeFile(endDataPacket, sizeEndDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
+	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
+	
 	sleep(1);
 
 	LLCLOSE(fd, &oldtio);
