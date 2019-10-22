@@ -79,38 +79,46 @@ int main(int argc, char **argv)
 	unsigned char *dataPacket;
 	int indice = 0;
 
+	int counter=0;
+
 	for (size_t i = 0; i < fileSize; i += SIZE_DATA)
 	{
 		dataPacket = getSETDataPacket(&fullData[i], SIZE_DATA);
 
 		LLWRITE(fd, dataPacket, SIZE_DATA + 6);
+		//prints para ver a quantidade de info que manda!
+		counter+=SIZE_DATA;
+		printf("\n --- wrote %d -----\n",counter);
 
-		for (int j = i; j < SIZE_DATA + 6; j++)
+		for (int j = i; j < SIZE_DATA + 6; j++)//ciclo para visualizaç~ao do packet
 			printf("%0x\n", dataPacket[j]);
 
-		if (i + 100 >= fileSize)
+		if ((i + 100) >= fileSize)
 		{
 			dataPacket = getSETDataPacket(&fullData[i], fileSize - i);
 
 			LLWRITE(fd, dataPacket, fileSize - i + 6);
 
+		//prints para o mesmo em cima
+			counter+=fileSize - i + 6;
+			printf("\n --- wrote %d -----\n",counter);
+			
 			for (int j = i; j < fileSize - i + 6; j++)
 				printf("%0x\n", dataPacket[j]);
 		}
 	}
-	/*
-	//=====Send FINAL====
-	unsigned char * endData;
 	
-	endData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
+	//=====Send FINAL====
+	/*unsigned char * endData;
 
 	int sizeEndData = 6 + strlen(argv[2]);
+	
+	getInitialEndDataPacket(file, argv[2], End, fileSize, &endData, &sizeEndData);
 
-	unsigned char * setStart = getSETDataPacket(endData, sizeEndData);
+	unsigned char * setEnd = getSETDataPacket(endData, sizeEndData);
 
 	
-	LLWRITE(fd, setStart, 6 + sizeEndData);*/
-
+	LLWRITE(fd, setEnd, 6 + sizeEndData);*/
 
 
 	LLCLOSE(fd, &oldtio);

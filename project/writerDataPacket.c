@@ -85,12 +85,25 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
         else
             continue;
 
-        printf("%0x\n", buf[n]);
+       // printf("%0x\n", buf[n]); //comentei pq era too much print xD
 
         if (n != 0)
         {
             if (buf[n] == FLAG)
+               {
+                printf("\n sent\n") ;  
                 break;
+               } 
+
+        }
+        if(n == 2){//ve se recebeu bem
+            if(buf[2]!=_RR)//ALDRABICE MAXIMA. mas funciona ehhe, mas temos de alterar
+                {//caso nao tenha recebido bem
+                    int res = write(fd, set, sizeSet);
+                    printf("\n REPEATED :%d bytes written\n", res);
+                    alarm(3);//repete
+                    n=-1;//lindo maravilhoso
+                }
         }
         n++;
 
