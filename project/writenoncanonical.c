@@ -81,32 +81,42 @@ int main(int argc, char **argv)
 
 	int counter=0;
 
-	for (size_t i = 0; i < fileSize; i += SIZE_DATA)
+	for (int i = 0; i < fileSize; i += SIZE_DATA)
 	{
 		dataPacket = getSETDataPacket(&fullData[i], SIZE_DATA);
 
 		LLWRITE(fd, dataPacket, SIZE_DATA + 6);
+
 		//prints para ver a quantidade de info que manda!
 		counter+=SIZE_DATA;
-		printf("\n --- wrote %d -----\n",counter);
 
-		for (int j = i; j < SIZE_DATA + 6; j++)//ciclo para visualizaç~ao do packet
-			printf("%0x\n", dataPacket[j]);
+		for (int j = 0; j < SIZE_DATA + 6; j++)//ciclo para visualizaç~ao do packet
+			printf("%0x ", dataPacket[j]);
 
-		if ((i + 100) >= fileSize)
-		{
-			dataPacket = getSETDataPacket(&fullData[i], fileSize - i);
+		printf("\nWrote so far: %d, %d\n\n", counter, i);
 
-			LLWRITE(fd, dataPacket, fileSize - i + 6);
+		if((counter + SIZE_DATA) >= fileSize)
+			break;
 
-		//prints para o mesmo em cima
-			counter+=fileSize - i + 6;
-			printf("\n --- wrote %d -----\n",counter);
-			
-			for (int j = i; j < fileSize - i + 6; j++)
-				printf("%0x\n", dataPacket[j]);
-		}
 	}
+
+	printf("SAIU DO CICLO!\n\n");
+	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
+	if((fileSize % SIZE_DATA) != 0){
+		
+		dataPacket = getSETDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA);
+
+		LLWRITE(fd, dataPacket, fileSize % SIZE_DATA + 6);
+
+		counter+=fileSize % SIZE_DATA;
+			
+		for (int j = 0; j < fileSize % SIZE_DATA + 6; j++)
+			printf("%0x ", dataPacket[j]);
+
+		
+		printf("\nWrote so far: %d\n\n", counter);
+	}
+
 	
 	//=====Send FINAL====
 	/*unsigned char * endData;
