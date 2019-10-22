@@ -63,10 +63,11 @@ int main(int argc, char **argv)
 
 	//=====Send Start====
 	unsigned char * startData;
+	int sizeStartData = 0;
 	
-	startData = getInitialEndDataPacket(file, argv[2], Begin, (long int)fileSize);
+	getInitialEndDataPacket(file, argv[2], Begin, fileSize, &startData, &sizeStartData);
 
-	int sizeStartData = 6 + strlen(argv[2]);
+	printf("SizeFile: %ld\n", fileSize);
 
 	unsigned char * setStart = getSETDataPacket(startData, sizeStartData);
 
