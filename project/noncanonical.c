@@ -97,9 +97,6 @@ int main(int argc, char **argv)
 	int sizeEndDataPacket = 0;
 
 	while(LLREAD(fd, &endDataPacket, &sizeEndDataPacket)==1);
-
-	for(int i = 0; i < sizeEndDataPacket; i++)
-	printf("%0x ", endDataPacket[i]);
 	
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;
