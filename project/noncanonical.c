@@ -92,7 +92,8 @@ int main(int argc, char **argv)
 
 	sleep(1);
 
-	LLCLOSE(fd);
+	if (LLCLOSE(fd) == -1)
+		exit(EXIT_FAILURE);
 
 	return 0;
 }

@@ -111,7 +111,8 @@ int main(int argc, char **argv)
 
 	LLWRITE(fd, setEnd, 6 + sizeEndData);
 
-	LLCLOSE(fd);
+	if (LLCLOSE(fd)==-1)
+		exit(EXIT_FAILURE);
 
 	return 0;
 }
