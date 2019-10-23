@@ -59,7 +59,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 			*state = 0;
 		break;
 	case 2:
-		if (byte_received == C_SET)
+		if (byte_received == C_SET || byte_received == _SET || byte_received == _DISC || byte_received == _UA)
 		{
 			SET[*sizeMessage] = byte_received;
 			*state = 3;
@@ -123,36 +123,44 @@ int checkBCC2(unsigned char SET[], int sizeMessage)
 		return FALSE;
 }
 
-void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
+void receivedOK(int fd, unsigned char controlBit)
 {
+
 
 	unsigned char sendDataPacket[5];
 
 	sendDataPacket[0] = FLAG;
 	sendDataPacket[1] = A;
 
-	switch (cf)
+	switch (controlBit)
 	{
-	case SET:
-		sendDataPacket[2] = _SET;
-		break;
-
-	case DISC:
-		sendDataPacket[2] = _DISC;
-		break;
-
-	case UA:
+	case _SET:
 		sendDataPacket[2] = _UA;
 		break;
 
-	case RR:
+	case _DISC:
+		sendDataPacket[2] = _DISC;
+		break;
+
+	case _UA:
+		sendDataPacket[2] = _UA;
+		break;
+
+	case 0x40:
 		sendDataPacket[2] = _RR;
 
 		sendDataPacket[2] |= controlBit << 1;
 		
 		break;
 
-	case REJ:
+	case 0x00:
+		sendDataPacket[2] = _RR;
+
+		sendDataPacket[2] |= controlBit << 1;
+		
+		break;
+
+	default:
 		sendDataPacket[2] = _REJ;
 
 		sendDataPacket[2] |= controlBit << 1;
@@ -164,6 +172,7 @@ void receivedOK(int fd, enum ControlField cf, unsigned char controlBit)
 
 	write(fd, sendDataPacket, 5);
 }
+
 
 int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 {
@@ -186,13 +195,13 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
 			if (checkBCC2(*dataPacket, *sizeDataPacket))
 			{
-				//checkResponse(fd,SET[2]);
-				receivedOK(fd, RR, SET[2]);
+
+				receivedOK(fd, SET[2]);
 				printf("Received the info correctly!\n");
 			}
 			else
 			{
-				receivedOK(fd, REJ, SET[2]);
+				receivedOK(fd, 0x77);
 				printf("Something went wrong and the BCC2 is not correct!\n");
 				return 1;
 			}
@@ -246,4 +255,15 @@ int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
 	}
 
 	return 0;
+}
+
+int getData(unsigned char * dataPacket, int sizeDataPacket, unsigned char ** fullFile, int beginPosition){
+
+int i;
+	for(i = 4; i < sizeDataPacket - 2; i++){
+
+	(*fullFile)[i-4 + beginPosition] = dataPacket[i];
+	}
+
+	return i - 4;
 }

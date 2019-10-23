@@ -23,7 +23,7 @@
 
 #define FLAG 0x7e
 #define A 0x03
-#define C_SET 0x30
+#define C_SET 0x40
 #define BCC A ^ C_SET
 
 int main(int argc, char **argv)
@@ -50,6 +50,7 @@ int main(int argc, char **argv)
 	unsigned char *initialDataPacket;
 	int sizeInitialDataPacket = 0;
 
+
 	//Initial DataPacket (ther real information is coming after this one)
 	while (LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket) == 1);
 
@@ -61,32 +62,43 @@ int main(int argc, char **argv)
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
 
-	int infoRecieved = 0;
+	int infoReceived = 0;
 
-	unsigned char *dataPacket;
-	int sizeDataPacket = 0;
 	int n = 0;
+	int returnValueGetData = 0;
+
+	unsigned char * fullFile = malloc(sizeof(unsigned char)*sizeOfFile);
 
 	//FILE IS COMING
-	while (infoRecieved < sizeOfFile)
+	while (infoReceived < sizeOfFile)
 	{
 
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
+		int beginPosition = infoReceived;
+
 		if (LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
-			infoRecieved += sizeDataPacket - 6;
+			infoReceived += sizeDataPacket - 6;
 
 		n++;
+
+		int returnValue = getData(dataPacket, sizeDataPacket, &fullFile, beginPosition);
+		returnValueGetData += returnValue;
 
 		for (int i = 0; i < sizeDataPacket; i++)
 			printf("%0x ", dataPacket[i]);
 
 		printf("\nSize of the last data packet: %d\n", sizeDataPacket);
-		printf("Received so far: %d, %d\n\n", infoRecieved, n);
+		printf("Received so far: %d, %d, %d\n\n", infoReceived, n, returnValueGetData);
 	}
 
 	printf("GOT OUT OF CYCLE\n");
+
+
+	for (int i = 0; i < sizeOfFile; i++)
+		printf("%0x ", fullFile[i]);
+
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
@@ -98,7 +110,18 @@ int main(int argc, char **argv)
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
-	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
+	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFileEND, sizeOfNameEND, sizeOfFileEND);
+
+	
+	FILE * finishFile = fopen(nameOfFile, "wb+");
+
+	if(finishFile == NULL)
+	{
+		perror("Could not create file");
+		exit (-1);
+	}
+
+	fwrite(fullFile, sizeof(unsigned char), sizeOfFile, finishFile);
 	
 	sleep(1);
 
