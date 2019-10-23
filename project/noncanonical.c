@@ -41,6 +41,12 @@ int main(int argc, char **argv)
 
 	fd = LLOPEN(argv[1], RECEIVER);
 
+	if (fd < 0)
+    {
+      perror(argv[1]);
+      exit(-1);
+    }
+
 	unsigned char *initialDataPacket;
 	int sizeInitialDataPacket = 0;
 

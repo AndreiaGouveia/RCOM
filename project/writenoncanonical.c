@@ -42,8 +42,22 @@ int main(int argc, char **argv)
 
 	int fd = LLOPEN(argv[1], TRANSMITTER);
 
+	if (fd < 0)
+    {
+      perror(argv[1]);
+      exit(-1);
+    }
+
 	//storing info
 	size_t fileSize;
+	FILE * file = fopen(argv[2], "rb");
+
+	if(file == NULL){
+		perror("Can't find such file");
+		exit(-1);
+
+	}
+	
 	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
 
 	//=====Send Start====
