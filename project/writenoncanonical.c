@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
 	printf("SizeFile: %ld\n", fileSize);
 
-	unsigned char *setStart = getSETDataPacket(startData, sizeStartData);
+	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
 
 	LLWRITE(fd, setStart, 6 + sizeStartData);
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < fileSize; i += SIZE_DATA)
 	{
-		dataPacket = getSETDataPacket(&fullData[i], SIZE_DATA);
+		dataPacket = getSETDataPacket(&fullData[i], SIZE_DATA, C_SET);
 
 		LLWRITE(fd, dataPacket, SIZE_DATA + 6);
 
@@ -102,7 +102,7 @@ int main(int argc, char **argv)
 	if ((fileSize % SIZE_DATA) != 0)
 	{
 
-		dataPacket = getSETDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA);
+		dataPacket = getSETDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, C_SET);
 
 		LLWRITE(fd, dataPacket, fileSize % SIZE_DATA + 6);
 
@@ -121,7 +121,7 @@ int main(int argc, char **argv)
 
 	getInitialEndDataPacket(file, argv[2], End, fileSize, &endData, &sizeEndData);
 
-	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData);
+	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
 
 	LLWRITE(fd, setEnd, 6 + sizeEndData);
 
