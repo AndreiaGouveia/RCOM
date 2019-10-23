@@ -27,7 +27,7 @@ int LLWRITE(int fd, unsigned char *buffer, int length);
 void atende();
 
 int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char ** initialSet, int * sizeInitialSet);
-unsigned char * getSETDataPacket(unsigned char *data, int sizeData);
+unsigned char * getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
 unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName);
 
 int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing);

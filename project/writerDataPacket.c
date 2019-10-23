@@ -33,13 +33,13 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
     }
 }
 
-unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
+unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
 {
     unsigned char *setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
     setBefore[0] = FLAG;
     setBefore[1] = A;
-    setBefore[2] = C_SET;
+    setBefore[2] = CFlag;
     setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
 
     for (int i = 1; i <= sizeData; i++)
@@ -54,9 +54,53 @@ unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
     return setBefore;
 }
 
-//ALTERAR VALOR DE RETORNO PARA NUMERO DE CARARTERES ESCRITOS
-int LLWRITE(int fd, unsigned char *buffer, int length)
+int readResponse(unsigned char originalFlag, unsigned char cFlag)
 {
+	printf("\n Original Flag: %x \n", originalFlag);
+	printf("\n C Flag: %x \n", cFlag);
+
+	//Se for a trama inicial esta a espera de um UA
+	if(originalFlag == _SET)
+	{
+		printf("\n HEREE \n");
+		if(cFlag == _UA)
+			return 0;
+		return 1;
+		
+	}
+	//send disc, expects disc
+	if(originalFlag == _DISC){
+
+		if(cFlag == _DISC)
+			return 0;
+
+		return 1;
+	}
+
+
+	if(originalFlag != C_SET && originalFlag != 0x00)
+		return 1;
+
+
+	unsigned char controlBit = originalFlag << 1;
+
+	unsigned char expectedCFlag = _RR | controlBit;
+
+	if(expectedCFlag == cFlag)
+		return 0;
+
+	return 1;
+ 
+
+
+	
+}
+
+//ALTERAR VALOR DE RETORNO PARA NUMERO DE CARARTERES ESCRITOS
+int LLWRITE(int fd1, unsigned char *buffer, int length)
+{
+fd = fd1;
+
     unsigned char buf[255];
 
     stuffing(buffer, length);
@@ -64,10 +108,6 @@ int LLWRITE(int fd, unsigned char *buffer, int length)
     int res = write(fd, set, sizeSet);
     printf("%d bytes written\n", res);
     alarm(3);
-
-    //Quando receber a trama de resposta toda
-    unsigned char temp = _RR;
-    temp |= set[2] << 1;
 
     int n = 0;
 
@@ -92,7 +132,8 @@ int LLWRITE(int fd, unsigned char *buffer, int length)
 
         if (n != 0 && buf[n] == FLAG)
         {
-            if (buf[2] != temp) //caso nao tenha recebido bem
+		printf("\n --- buf2 = %x --\n", buf[2]);
+            if (readResponse(set[2], buf[2]) != 0) //caso nao tenha recebido bem
             {
                 printf(" \n ---- REPEAT ----\n");
                 int res = write(fd, set, sizeSet);
@@ -101,13 +142,14 @@ int LLWRITE(int fd, unsigned char *buffer, int length)
             }
             else
                 break;
-
             n = -1;
         }
 
         n++;
 
     } while (1);
+
+	printf("\n HEREE2 \n");
 
     return 0;
 }
