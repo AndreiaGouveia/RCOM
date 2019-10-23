@@ -182,8 +182,6 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
 		if (n == 6)
 		{
-
-
 			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
 
 			if (checkBCC2(*dataPacket, *sizeDataPacket))

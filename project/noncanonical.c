@@ -55,7 +55,8 @@ int main(int argc, char **argv)
 	int sizeInitialDataPacket = 0;
 
 	//Initial DataPacket (ther real information is coming after this one)
-	LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket);
+	while(LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket)==1);
+	
 
 	char * nameOfFile;
 	int sizeOfName = 0;
@@ -72,12 +73,11 @@ int main(int argc, char **argv)
 	int n = 0;
 
 	//FILE IS COMING
-	while(infoRecieved <= sizeOfFile)
+	while(infoRecieved < sizeOfFile)
 	{
 
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
-
 
 		if(LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
 			infoRecieved += sizeDataPacket - 6;
@@ -89,14 +89,14 @@ int main(int argc, char **argv)
 
 		printf("\nSize of the last data packet: %d\n", sizeDataPacket);
 		printf("Received so far: %d, %d\n\n", infoRecieved, n);
-
+	
 	}
 
 	printf("GOT OUT OF CYCLE\n");
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	LLREAD(fd, &endDataPacket, &sizeEndDataPacket);
+	while(LLREAD(fd, &endDataPacket, &sizeEndDataPacket)==1);
 	
 	getSizeFile(endDataPacket, sizeEndDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
