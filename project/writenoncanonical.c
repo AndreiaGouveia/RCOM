@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 
 	
 	//=====Send FINAL====
-	/*unsigned char * endData;
+	unsigned char * endData;
 
 	int sizeEndData = 6 + strlen(argv[2]);
 	
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
 	unsigned char * setEnd = getSETDataPacket(endData, sizeEndData);
 
 	
-	LLWRITE(fd, setEnd, 6 + sizeEndData);*/
+	LLWRITE(fd, setEnd, 6 + sizeEndData);
 
 
 	LLCLOSE(fd, &oldtio);

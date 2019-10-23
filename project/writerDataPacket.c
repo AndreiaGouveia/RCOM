@@ -66,7 +66,12 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
     printf("%d bytes written\n", res);
     alarm(3);
 
+    //Quando receber a trama de resposta toda
+    unsigned char temp =_RR;
+    temp |= set[2] <<1;
+
     int n = 0;
+
     do
     {
 
@@ -87,25 +92,26 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
 
         //Should Have the stateMachine here to confirm when it reachs the end
        
-        if (n != 0)
+        if(n != 0 && buf[n] == FLAG)
         {
-            if (buf[n] == FLAG)
-               {
-                printf("\n Received the response trama\n") ;  
+            if(buf[2] != temp) //caso nao tenha recebido bem
+            {
+                printf(" \n ---- REPEAT ----\n");
+                int res = write(fd, set, sizeSet);
+                printf("%d bytesrepeated\n", res);
+                alarm(3);
+            }
+            else  {
                 break;
-               } 
+            }
 
+            n=-1;
         }
         
         n++;
 
     } while (1);
 
-    //Quando receber a trama de resposta toda
-    /*if(buf[2] ==_RR) //caso nao tenha recebido bem
-    {
-        LLWRITE(fd, package, packageSize);
-    }*/
 }
 
 
