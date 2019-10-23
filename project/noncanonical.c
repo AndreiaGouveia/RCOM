@@ -97,9 +97,17 @@ int main(int argc, char **argv)
 	int sizeEndDataPacket = 0;
 
 	while(LLREAD(fd, &endDataPacket, &sizeEndDataPacket)==1);
+
+	for(int i = 0; i < sizeEndDataPacket; i++)
+	printf("%0x ", endDataPacket[i]);
 	
-	getSizeFile(endDataPacket, sizeEndDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
-	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
+	char * nameOfFileEND;
+	int sizeOfNameEND = 0;
+	int sizeOfFileEND = 0;
+
+	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
+
+	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
 	
 	sleep(1);
 

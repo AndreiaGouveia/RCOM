@@ -186,6 +186,7 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
 			if (checkBCC2(*dataPacket, *sizeDataPacket))
 			{
+				//checkResponse(fd,SET[2]);
 				receivedOK(fd, RR, SET[2]);
 				printf("Received the info correctly!\n");
 			}
