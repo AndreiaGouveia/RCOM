@@ -111,7 +111,7 @@ int main(int argc, char **argv)
 
 	LLWRITE(fd, setEnd, 6 + sizeEndData);
 
-	LLCLOSE(fd, &oldtio);
+	LLCLOSE(fd);
 
 	return 0;
 }
