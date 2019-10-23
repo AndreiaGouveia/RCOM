@@ -23,7 +23,7 @@
 
 enum WhichControl{Begin, End};
 
-void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize);
+int LLWRITE(int fd, unsigned char *buffer, int length);
 void atende();
 
 int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char ** initialSet, int * sizeInitialSet);

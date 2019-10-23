@@ -12,6 +12,6 @@
 #define BAUDRATE B38400
 
 
-int LLOPEN( int fd, struct termios * newtio, struct termios * oldtio);
+int LLOPEN( int fd, int flag);
 
 int LLCLOSE(int fd, struct termios * oldtio);

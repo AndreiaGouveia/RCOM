@@ -11,6 +11,9 @@
 #include "serialPort.h"
 #include "writerDataPacket.h"
 
+#define RECEIVER 0
+#define TRANSMITTER 1
+
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -24,8 +27,6 @@ unsigned char buf[255];
 
 int main(int argc, char **argv)
 {
-
-	struct termios oldtio, newtio;
 	int i, sum = 0, speed = 0;
 
 	(void)signal(SIGALRM, atende);
@@ -39,39 +40,22 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	int fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
-	if (fd < 0)
-	{
-		perror(argv[1]);
-		exit(-1);
-	}
-
-	// Getting our file
-	FILE *file = fopen(argv[2], "rb");
-
-	if (file == NULL)
-	{
-		perror("Can't find such file");
-		exit(-1);
-	}
+	int fd = LLOPEN(argv[1], TRANSMITTER);
 
 	//storing info
 	size_t fileSize;
 	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
 
-	LLOPEN(fd, &newtio, &oldtio);
-
 	//=====Send Start====
-	unsigned char * startData;
+	unsigned char *startData;
 	int sizeStartData = 0;
-	
+
 	getInitialEndDataPacket(file, argv[2], Begin, fileSize, &startData, &sizeStartData);
 
 	printf("SizeFile: %ld\n", fileSize);
 
-	unsigned char * setStart = getSETDataPacket(startData, sizeStartData);
+	unsigned char *setStart = getSETDataPacket(startData, sizeStartData);
 
-	
 	LLWRITE(fd, setStart, 6 + sizeStartData);
 
 	//=====Send FILE Data=====
@@ -79,7 +63,7 @@ int main(int argc, char **argv)
 	unsigned char *dataPacket;
 	int indice = 0;
 
-	int counter=0;
+	int counter = 0;
 
 	for (int i = 0; i < fileSize; i += SIZE_DATA)
 	{
@@ -88,48 +72,44 @@ int main(int argc, char **argv)
 		LLWRITE(fd, dataPacket, SIZE_DATA + 6);
 
 		//prints para ver a quantidade de info que manda!
-		counter+=SIZE_DATA;
+		counter += SIZE_DATA;
 
-		for (int j = 0; j < SIZE_DATA + 6; j++)//ciclo para visualizaç~ao do packet
+		for (int j = 0; j < SIZE_DATA + 6; j++) //ciclo para visualizaç~ao do packet
 			printf("%0x ", dataPacket[j]);
 
 		printf("\nWrote so far: %d, %d\n\n", counter, i);
 
-		if((counter + SIZE_DATA) >= fileSize)
+		if ((counter + SIZE_DATA) >= fileSize)
 			break;
-
 	}
 
 	printf("SAIU DO CICLO!\n\n");
 	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
-	if((fileSize % SIZE_DATA) != 0){
-		
+	if ((fileSize % SIZE_DATA) != 0)
+	{
+
 		dataPacket = getSETDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA);
 
 		LLWRITE(fd, dataPacket, fileSize % SIZE_DATA + 6);
 
-		counter+=fileSize % SIZE_DATA;
-			
+		counter += fileSize % SIZE_DATA;
+
 		for (int j = 0; j < fileSize % SIZE_DATA + 6; j++)
 			printf("%0x ", dataPacket[j]);
 
-		
 		printf("\nWrote so far: %d\n\n", counter);
 	}
 
-	
 	//=====Send FINAL====
-	unsigned char * endData;
+	unsigned char *endData;
 
 	int sizeEndData = 6 + strlen(argv[2]);
-	
+
 	getInitialEndDataPacket(file, argv[2], End, fileSize, &endData, &sizeEndData);
 
-	unsigned char * setEnd = getSETDataPacket(endData, sizeEndData);
+	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData);
 
-	
 	LLWRITE(fd, setEnd, 6 + sizeEndData);
-
 
 	LLCLOSE(fd, &oldtio);
 

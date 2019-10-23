@@ -13,6 +13,9 @@
 #include "writerDataPacket.h"
 #include "receiverDataPacket.h"
 
+#define RECEIVER 0
+#define TRANSMITTER 1
+
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
@@ -26,7 +29,6 @@
 int main(int argc, char **argv)
 {
 	int fd, c, res;
-	struct termios oldtio, newtio;
 	unsigned char buf[5];
 
 	if ((argc < 2) ||
@@ -37,35 +39,22 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	/*
-    Open serial port device for reading and writing and not as controlling tty
-    because we don't want to get killed if linenoise sends CTRL-C.
-  */
-
-	fd = open(argv[1], O_RDWR | O_NOCTTY);
-	if (fd < 0)
-	{
-		perror(argv[1]);
-		exit(-1);
-	}
-
-	LLOPEN(fd, &newtio, &oldtio);
+	fd = LLOPEN(argv[1], RECEIVER);
 
 	unsigned char *initialDataPacket;
 	int sizeInitialDataPacket = 0;
 
 	//Initial DataPacket (ther real information is coming after this one)
-	while(LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket)==1);
-	
+	while (LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket) == 1);
 
-	char * nameOfFile;
+	char *nameOfFile;
 	int sizeOfName = 0;
 	int sizeOfFile = 0;
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
-	
+
 	int infoRecieved = 0;
 
 	unsigned char *dataPacket;
@@ -73,34 +62,34 @@ int main(int argc, char **argv)
 	int n = 0;
 
 	//FILE IS COMING
-	while(infoRecieved < sizeOfFile)
+	while (infoRecieved < sizeOfFile)
 	{
 
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
-		if(LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
+		if (LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
 			infoRecieved += sizeDataPacket - 6;
-		
+
 		n++;
 
-		for(int i = 0; i < sizeDataPacket; i++)
+		for (int i = 0; i < sizeDataPacket; i++)
 			printf("%0x ", dataPacket[i]);
 
 		printf("\nSize of the last data packet: %d\n", sizeDataPacket);
 		printf("Received so far: %d, %d\n\n", infoRecieved, n);
-	
 	}
 
 	printf("GOT OUT OF CYCLE\n");
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	while(LLREAD(fd, &endDataPacket, &sizeEndDataPacket)==1);
-	
+	while (LLREAD(fd, &endDataPacket, &sizeEndDataPacket) == 1)
+		;
+
 	getSizeFile(endDataPacket, sizeEndDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n", nameOfFile, sizeOfName, sizeOfFile);
-	
+
 	sleep(1);
 
 	LLCLOSE(fd, &oldtio);

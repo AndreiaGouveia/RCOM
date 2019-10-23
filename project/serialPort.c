@@ -1,7 +1,40 @@
 #include "serialPort.h"
 
-int LLOPEN(int fd, struct termios *newtio, struct termios *oldtio)
+struct termios oldtio, newtio;
+
+#define RECEIVER 0
+#define TRANSMITTER 1
+
+int LLOPEN(int porta, int flag)
 {
+  if (flag == TRANSMITTER)
+  {
+    fd = open(porta, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (fd < 0)
+    {
+      perror(porta);
+      exit(-1);
+    }
+
+    // Getting our file
+    FILE *file = fopen(argv[2], "rb");
+
+    if (file == NULL)
+    {
+      perror("Can't find such file");
+      exit(-1);
+    }
+  }
+  else if (flag == RECEIVER)
+  {
+    fd = open(porta, O_RDWR | O_NOCTTY);
+    if (fd < 0)
+    {
+      perror(argv[1]);
+      exit(-1);
+    }
+  }
+
   /*
     Open serial port device for reading and writing and not as controlling tty
     because we don't want to get killed if linenoise sends CTRL-C.
@@ -25,7 +58,7 @@ int LLOPEN(int fd, struct termios *newtio, struct termios *oldtio)
   newtio->c_cc[VMIN] = 1;  /* blocking read until 5 chars received */
                            /*
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a
-    leitura do(s) pr�ximo(s) caracter(es)
+    leitura do(s) prximo(s) caracter(es)
   */
 
   tcflush(fd, TCIOFLUSH); //fazer fluish antes de mandar cenas
