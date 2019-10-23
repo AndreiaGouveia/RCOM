@@ -33,10 +33,9 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
     }
 }
 
-unsigned char * getSETDataPacket(unsigned char *data, int sizeData)
+unsigned char *getSETDataPacket(unsigned char *data, int sizeData)
 {
-    unsigned char * setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
-
+    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
 
     setBefore[0] = FLAG;
     setBefore[1] = A;
@@ -55,31 +54,30 @@ unsigned char * getSETDataPacket(unsigned char *data, int sizeData)
     return setBefore;
 }
 
-void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
+//ALTERAR VALOR DE RETORNO PARA NUMERO DE CARARTERES ESCRITOS
+int LLWRITE(int fd, unsigned char *buffer, int length)
 {
-    fd = fileDiscriptor;
     unsigned char buf[255];
 
-    stuffing(package, packageSize);
+    stuffing(buffer, length);
 
     int res = write(fd, set, sizeSet);
     printf("%d bytes written\n", res);
     alarm(3);
 
     //Quando receber a trama de resposta toda
-    unsigned char temp =_RR;
-    temp |= set[2] <<1;
+    unsigned char temp = _RR;
+    temp |= set[2] << 1;
 
     int n = 0;
 
     do
     {
-
         //Checking if it has send more than 4 times the packet
         if (count_ALARM >= 4)
         {
             printf("Didn't get a response. BYE!\n");
-            break;
+            return -1;
         }
 
         res = read(fd, &buf[n], 1);
@@ -91,30 +89,28 @@ void LLWRITE(int fileDiscriptor, unsigned char *package, int packageSize)
             continue;
 
         //Should Have the stateMachine here to confirm when it reachs the end
-       
-        if(n != 0 && buf[n] == FLAG)
+
+        if (n != 0 && buf[n] == FLAG)
         {
-            if(buf[2] != temp) //caso nao tenha recebido bem
+            if (buf[2] != temp) //caso nao tenha recebido bem
             {
                 printf(" \n ---- REPEAT ----\n");
                 int res = write(fd, set, sizeSet);
                 printf("%d bytesrepeated\n", res);
                 alarm(3);
             }
-            else  {
+            else
                 break;
-            }
 
-            n=-1;
+            n = -1;
         }
-        
+
         n++;
 
     } while (1);
 
+    return 0;
 }
-
-
 
 long int findSize(FILE *fp)
 {
@@ -130,9 +126,8 @@ long int findSize(FILE *fp)
     return res;
 }
 
-int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char ** initialSet, int * sizeInitialSet)
+int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
 {
-    
 
     //alocating the space for the initialSet
     int sizeOfNumberFileSize = 2; // ceil(ln(fileSize, 2)/8.0);
@@ -148,29 +143,29 @@ int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichContr
         (*initialSet)[0] = 0x03;
 
     //TYPE - LENGTH - VALUE
-    
+
     //Size of file
     (*initialSet)[1] = 0x00;
-
 
     (*initialSet)[2] = sizeOfNumberFileSize;
 
     int i = (*initialSet)[2] + 2;
     int n = 0;
 
-    while (i > 2) { 
-  
-        (*initialSet)[i] = (fileSize >> 8*n) & 0xFF;
-        
+    while (i > 2)
+    {
+
+        (*initialSet)[i] = (fileSize >> 8 * n) & 0xFF;
+
         i--;
         n++;
-    } 
+    }
 
-    int offset = (*initialSet)[2]+2;
+    int offset = (*initialSet)[2] + 2;
 
     //Name of file
-    (*initialSet)[1+offset] = 0x01;
-    (*initialSet)[2+offset] = sizeOfName;
+    (*initialSet)[1 + offset] = 0x01;
+    (*initialSet)[2 + offset] = sizeOfName;
 
     for (int i = 0; i < sizeOfName; i++)
     {
@@ -195,10 +190,11 @@ unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName)
     return fullData;
 }
 
-int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing){
+int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing)
+{
 
     //allocating necessary space
-    set = (unsigned char *) malloc(sizeof(unsigned char) * sizeBeforeStuffing);
+    set = (unsigned char *)malloc(sizeof(unsigned char) * sizeBeforeStuffing);
 
     //INITIAl FLAG
     set[0] = beforeStuffing[0];
@@ -207,29 +203,28 @@ int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing){
     int currentPositionOfStuffing = 1;
 
     //Size of the afterStuffing array
-    sizeSet=sizeBeforeStuffing;
+    sizeSet = sizeBeforeStuffing;
 
-    for(int i = 1; i < sizeBeforeStuffing-1; i++, currentPositionOfStuffing++){
+    for (int i = 1; i < sizeBeforeStuffing - 1; i++, currentPositionOfStuffing++)
+    {
 
-        if(beforeStuffing[i] == FLAG || beforeStuffing[i] == STUFFING)
+        if (beforeStuffing[i] == FLAG || beforeStuffing[i] == STUFFING)
         {
             sizeSet += 2;
-            set=realloc(set, sizeSet);
+            set = realloc(set, sizeSet);
 
-            set[currentPositionOfStuffing]=STUFFING;
+            set[currentPositionOfStuffing] = STUFFING;
             set[currentPositionOfStuffing + 1] = beforeStuffing[i] ^ EXCLUSIVE_OR_STUFFING;
             currentPositionOfStuffing++;
-
-        }else
-        {
-            set[currentPositionOfStuffing]=beforeStuffing[i];
         }
-        
+        else
+        {
+            set[currentPositionOfStuffing] = beforeStuffing[i];
+        }
     }
 
     //END FLAG
-    set[sizeSet-1] = beforeStuffing[sizeBeforeStuffing- 1];
+    set[sizeSet - 1] = beforeStuffing[sizeBeforeStuffing - 1];
 
     return 0;
 }
-
