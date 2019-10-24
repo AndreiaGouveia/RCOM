@@ -81,9 +81,14 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < fileSize; i += SIZE_DATA)
 	{
-		dataPacket = getSETDataPacket(&fullData[i], SIZE_DATA, C_SET);
+		indice++;
+		unsigned char * fulldataPacket;
+		int sizefullDataPacket;
 
-		LLWRITE(fd, dataPacket, SIZE_DATA + 6);
+		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
+		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
+
+		LLWRITE(fd, dataPacket, sizefullDataPacket + 6);
 
 		//prints para ver a quantidade de info que manda!
 		counter += SIZE_DATA;
@@ -102,9 +107,14 @@ int main(int argc, char **argv)
 	if ((fileSize % SIZE_DATA) != 0)
 	{
 
-		dataPacket = getSETDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, C_SET);
+		indice++;
+		unsigned char * fulldataPacket;
+		int sizefullDataPacket;
 
-		LLWRITE(fd, dataPacket, fileSize % SIZE_DATA + 6);
+		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
+		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
+
+		LLWRITE(fd, dataPacket, sizefullDataPacket + 6);
 
 		counter += fileSize % SIZE_DATA;
 

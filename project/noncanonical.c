@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 		int beginPosition = infoReceived;
 
 		if (LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
-			infoReceived += sizeDataPacket - 10;
+			infoReceived += sizeDataPacket - 6;
 
 		n++;
 

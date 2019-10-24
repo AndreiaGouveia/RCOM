@@ -30,4 +30,6 @@ int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichContr
 unsigned char * getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
 unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName);
 
+int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullData, int * sizefullData, int nSeq);
+
 int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing);

@@ -260,10 +260,10 @@ int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
 int getData(unsigned char * dataPacket, int sizeDataPacket, unsigned char ** fullFile, int beginPosition){
 
 int i;
-	for(i = 8; i < sizeDataPacket - 2; i++){
+	for(i = 4; i < sizeDataPacket - 2; i++){
 
-	(*fullFile)[i-8 + beginPosition] = dataPacket[i];
+	(*fullFile)[i-4 + beginPosition] = dataPacket[i];
 	}
 
-	return i - 8;
+	return i - 4;
 }

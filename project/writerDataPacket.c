@@ -33,6 +33,23 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
     }
 }
 
+int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullData, int * sizefullData, int nSeq){
+
+	(* sizefullData) = sizeData+4;
+
+	(*fullData) = malloc(sizeof(unsigned char) * (*sizefullData));
+	
+	(*fullData)[0] = 0x01;
+	(*fullData)[1] = nSeq;
+	(*fullData)[2] = sizeData/256;
+	(*fullData)[3] = sizeData % 256;
+
+	//memcpy(dest, src, strlen(src)+1);
+
+	for(int i = 0; i < sizeData; i++)
+		(*fullData)[i+4] = data[i];
+}
+
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
 {
     unsigned char *setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
