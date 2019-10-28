@@ -58,6 +58,13 @@ int main(int argc, char **argv)
 	int sizeOfName = 0;
 	int sizeOfFile = 0;
 
+
+	//Checks if the control field is correct. In this case 0x02 -> beginning of transaction
+	if(initialDataPacket[4] != 0x02) {
+		printf("The control field of the initial control packet should be 0x02.");
+		return 1;
+	}
+
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
@@ -107,6 +114,12 @@ int main(int argc, char **argv)
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;
 	int sizeOfFileEND = 0;
+
+	//Checks if the control field is correct. In this case 0x03 -> end of transaction
+	if(endDataPacket[4] != 0x03) {
+		printf("The control field of the end control packet should be 0x03.");
+		return 1;
+	}
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
