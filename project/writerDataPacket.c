@@ -75,10 +75,10 @@ int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichContr
 
     if (cf == Begin)
     {
-        (*initialSet)[0] = 0x02;
+        (*initialSet)[0] = _SET;
     }
     else
-        (*initialSet)[0] = 0x03;
+        (*initialSet)[0] = _DISC;
 
     //TYPE - LENGTH - VALUE
 

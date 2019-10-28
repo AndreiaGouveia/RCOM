@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 	int sizeOfFileEND = 0;
 
 	//Checks if the control field is correct. In this case 0x03 -> end of transaction
-	if(endDataPacket[4] != 0x03) {
+	if(endDataPacket[4] != _DISC) {
 		printf("The control field of the end control packet should be 0x03.");
 		return 1;
 	}
