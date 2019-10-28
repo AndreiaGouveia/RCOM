@@ -8,21 +8,8 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include "serialPort.h"
+#include "linkLayer.h"
 #include "writerDataPacket.h"
-
-#define RECEIVER 0
-#define TRANSMITTER 1
-
-#define BAUDRATE B38400
-#define MODEMDEVICE "/dev/ttyS1"
-#define _POSIX_SOURCE 1 /* POSIX compliant source */
-#define FALSE 0
-#define TRUE 1
-#define SIZE_DATA 100
-
-volatile int STOP = FALSE;
-
 unsigned char buf[255];
 
 int main(int argc, char **argv)
