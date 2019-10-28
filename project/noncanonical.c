@@ -9,8 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "serialPort.h"
-#include "writerDataPacket.h"
+#include "linkLayer.h"
 #include "receiverDataPacket.h"
 
 #define RECEIVER 0
@@ -47,12 +46,14 @@ int main(int argc, char **argv)
       exit(-1);
     }
 
+	linkLayerData.fd = fd;	
+
 	unsigned char *initialDataPacket;
 	int sizeInitialDataPacket = 0;
 
 
 	//Initial DataPacket (ther real information is coming after this one)
-	while (LLREAD(fd, &initialDataPacket, &sizeInitialDataPacket) == 1);
+	while (LLREAD(&initialDataPacket, &sizeInitialDataPacket) == 1);
 
 	char *nameOfFile;
 	int sizeOfName = 0;
@@ -84,7 +85,7 @@ int main(int argc, char **argv)
 
 		int beginPosition = infoReceived;
 
-		if (LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
+		if (LLREAD(&dataPacket, &sizeDataPacket) == 0)
 			infoReceived += sizeDataPacket - 10;
 
 		expectedNumSeq ++;
@@ -123,7 +124,7 @@ int main(int argc, char **argv)
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	while(LLREAD(fd, &endDataPacket, &sizeEndDataPacket)==1);
+	while(LLREAD(&endDataPacket, &sizeEndDataPacket)==1);
 	
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;

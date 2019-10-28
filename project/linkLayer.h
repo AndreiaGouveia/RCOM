@@ -32,3 +32,17 @@ int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing);
 int readResponse(unsigned char originalFlag, unsigned char cFlag);
 
 void atende();
+
+
+int LLREAD(unsigned char **dataPacket, int *sizeDataPacket);
+
+
+void receivedOK(unsigned char controlBit);
+
+int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffing, int * sizeAfterDestuffing);
+
+
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage);
+
+
+int checkBCC2(unsigned char SET[], int sizeMessage);
