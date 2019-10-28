@@ -182,7 +182,7 @@ int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichContr
 {
 
     //alocating the space for the initialSet
-    int sizeOfNumberFileSize = 2; // ceil(ln(fileSize, 2)/8.0);
+    int sizeOfNumberFileSize = ceil(log2(fileSize)/8.0);
     int sizeOfName = strlen(fileName) + 1;
     (*sizeInitialSet) = (sizeOfNumberFileSize + 5 + sizeOfName) * sizeof(unsigned char);
     (*initialSet) = (unsigned char *)malloc((*sizeInitialSet));
