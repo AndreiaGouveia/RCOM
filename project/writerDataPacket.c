@@ -64,7 +64,7 @@ long int findSize(FILE *fp)
     return res;
 }
 
-int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
+int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
 {
 
     //alocating the space for the initialSet
@@ -77,7 +77,7 @@ int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichContr
     {
         (*initialSet)[0] = _SET;
     }
-    else
+    else if (cf == End )
         (*initialSet)[0] = _DISC;
 
     //TYPE - LENGTH - VALUE

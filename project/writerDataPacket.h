@@ -9,9 +9,9 @@
 #include "flags.h"
 
 enum WhichControl { Begin,
-                    End };
+                    End};
 
-int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
+int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
 unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName);
 

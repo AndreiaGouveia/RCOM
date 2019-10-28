@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 	unsigned char *startData;
 	int sizeStartData = 0;
 
-	getInitialEndDataPacket(file, argv[2], Begin, fileSize, &startData, &sizeStartData);
+	getControlDataPacket(file, argv[2], Begin, fileSize, &startData, &sizeStartData);
 
 	printf("SizeFile: %ld\n", fileSize);
 
@@ -116,11 +116,19 @@ int main(int argc, char **argv)
 
 	int sizeEndData = 6 + strlen(argv[2]);
 
-	getInitialEndDataPacket(file, argv[2], End, fileSize, &endData, &sizeEndData);
+	getControlDataPacket(file, argv[2], End, fileSize, &endData, &sizeEndData);
 
 	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
 
 	LLWRITE(setEnd, 6 + sizeEndData);
+
+
+	//======= UA Control DATA PACKET
+	unsigned char * UAControl;
+	int sizeUAControl = 5;
+	UAControl = getSETDataPacket(NULL, 0, _UA);
+
+	write(linkLayerData.fd, UAControl, sizeUAControl);
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);
