@@ -21,15 +21,26 @@
 #define STUFFING 0x7d
 #define EXCLUSIVE_OR_STUFFING 0x20
 
-enum WhichControl{Begin, End};
+typedef struct
+{
+    int fd;
+    unsigned int numTransmissions; /*Número de tentativas em caso de falha*/
+    unsigned char * frame;          /*Trama*/
+    int sizeFrame;
+} linkLayer;
 
-int LLWRITE(int fd, unsigned char *buffer, int length);
+linkLayer linkLayerData;
+
+enum WhichControl { Begin,
+                    End };
+
+int LLWRITE(unsigned char *buffer, int length);
 void atende();
 
-int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char ** initialSet, int * sizeInitialSet);
-unsigned char * getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
-unsigned char * readFile(FILE * file, size_t * size, unsigned char *fileName);
+int getInitialEndDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
+unsigned char *getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
+unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName);
 
-int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullData, int * sizefullData, int nSeq);
+int getFullDataPacket(unsigned char *data, int sizeData, unsigned char **fullData, int *sizefullData, int nSeq);
 
-int stuffing(unsigned char * beforeStuffing, int sizeBeforeStuffing);
+int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing);

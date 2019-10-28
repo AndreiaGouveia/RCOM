@@ -2,25 +2,20 @@
 
 #include <math.h>
 
-int count_ALARM = 0;
-int fd;
-unsigned char *set;
-int sizeSet;
-
 void atende()
 {
 
     printf("atendeu\n");
 
-    if (count_ALARM < 3)
+    if (linkLayerData.numTransmissions < 3)
     {
 
-        int res = write(fd, set, sizeSet);
+        int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
         printf("%d bytes written\n", res);
 
         alarm(3);
     }
-    count_ALARM++;
+    linkLayerData.numTransmissions++;
 }
 
 void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
@@ -114,15 +109,13 @@ int readResponse(unsigned char originalFlag, unsigned char cFlag)
 }
 
 //ALTERAR VALOR DE RETORNO PARA NUMERO DE CARARTERES ESCRITOS
-int LLWRITE(int fd1, unsigned char *buffer, int length)
+int LLWRITE(unsigned char *buffer, int length)
 {
-fd = fd1;
-
     unsigned char buf[255];
 
     stuffing(buffer, length);
 
-    int res = write(fd, set, sizeSet);
+    int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
     printf("%d bytes written\n", res);
     alarm(3);
 
@@ -131,13 +124,13 @@ fd = fd1;
     do
     {
         //Checking if it has send more than 4 times the packet
-        if (count_ALARM >= 4)
+        if (linkLayerData.numTransmissions >= 4)
         {
             printf("Didn't get a response. BYE!\n");
             return -1;
         }
 
-        res = read(fd, &buf[n], 1);
+        res = read(linkLayerData.fd, &buf[n], 1);
 
         //If the read is successful cancels the alarm. If not it continues trying to read
         if (res != -1)
@@ -150,10 +143,10 @@ fd = fd1;
         if (n != 0 && buf[n] == FLAG)
         {
 		printf("\n --- buf2 = %x --\n", buf[2]);
-            if (readResponse(set[2], buf[2]) != 0) //caso nao tenha recebido bem
+            if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
             {
                 printf(" \n ---- REPEAT ----\n");
-                int res = write(fd, set, sizeSet);
+                int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
                 printf("%d bytesrepeated\n", res);
                 alarm(3);
             }
@@ -253,37 +246,37 @@ int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing)
 {
 
     //allocating necessary space
-    set = (unsigned char *)malloc(sizeof(unsigned char) * sizeBeforeStuffing);
+    linkLayerData.frame = (unsigned char *)malloc(sizeof(unsigned char) * sizeBeforeStuffing);
 
     //INITIAl FLAG
-    set[0] = beforeStuffing[0];
+    linkLayerData.frame[0] = beforeStuffing[0];
 
     //current position on the afterStuffing array
     int currentPositionOfStuffing = 1;
 
     //Size of the afterStuffing array
-    sizeSet = sizeBeforeStuffing;
+    linkLayerData.sizeFrame = sizeBeforeStuffing;
 
     for (int i = 1; i < sizeBeforeStuffing - 1; i++, currentPositionOfStuffing++)
     {
 
         if (beforeStuffing[i] == FLAG || beforeStuffing[i] == STUFFING)
         {
-            sizeSet += 2;
-            set = realloc(set, sizeSet);
+            linkLayerData.sizeFrame += 2;
+            linkLayerData.frame = realloc(linkLayerData.frame, linkLayerData.sizeFrame);
 
-            set[currentPositionOfStuffing] = STUFFING;
-            set[currentPositionOfStuffing + 1] = beforeStuffing[i] ^ EXCLUSIVE_OR_STUFFING;
+            linkLayerData.frame[currentPositionOfStuffing] = STUFFING;
+            linkLayerData.frame[currentPositionOfStuffing + 1] = beforeStuffing[i] ^ EXCLUSIVE_OR_STUFFING;
             currentPositionOfStuffing++;
         }
         else
         {
-            set[currentPositionOfStuffing] = beforeStuffing[i];
+            linkLayerData.frame[currentPositionOfStuffing] = beforeStuffing[i];
         }
     }
 
     //END FLAG
-    set[sizeSet - 1] = beforeStuffing[sizeBeforeStuffing - 1];
+    linkLayerData.frame[linkLayerData.sizeFrame - 1] = beforeStuffing[sizeBeforeStuffing - 1];
 
     return 0;
 }

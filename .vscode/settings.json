@@ -4,6 +4,7 @@
         "types.h": "c",
         "fcntl.h": "c",
         "writerdatapacket.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "serialport.h": "c"
     }
 }

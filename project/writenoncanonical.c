@@ -48,6 +48,8 @@ int main(int argc, char **argv)
       exit(-1);
     }
 
+	linkLayerData.fd = fd;
+
 	//storing info
 	size_t fileSize;
 	FILE * file = fopen(argv[2], "rb");
@@ -70,7 +72,7 @@ int main(int argc, char **argv)
 
 	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
 
-	LLWRITE(fd, setStart, 6 + sizeStartData);
+	LLWRITE(setStart, 6 + sizeStartData);
 
 	//=====Send FILE Data=====
 	unsigned char tempData[100];
@@ -88,7 +90,7 @@ int main(int argc, char **argv)
 		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
 		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
 
-		LLWRITE(fd, dataPacket, sizefullDataPacket + 6);
+		LLWRITE(dataPacket, sizefullDataPacket + 6);
 
 		//prints para ver a quantidade de info que manda!
 		counter += SIZE_DATA;
@@ -114,7 +116,7 @@ int main(int argc, char **argv)
 		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
 		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
 
-		LLWRITE(fd, dataPacket, sizefullDataPacket + 6);
+		LLWRITE(dataPacket, sizefullDataPacket + 6);
 
 		counter += fileSize % SIZE_DATA;
 
@@ -133,7 +135,7 @@ int main(int argc, char **argv)
 
 	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
 
-	LLWRITE(fd, setEnd, 6 + sizeEndData);
+	LLWRITE(setEnd, 6 + sizeEndData);
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);

@@ -11,7 +11,6 @@
 
 #define BAUDRATE B38400
 
-
 int LLOPEN( char * fd, int flag);
 
 int LLCLOSE(int fd);
