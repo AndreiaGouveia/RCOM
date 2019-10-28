@@ -75,10 +75,10 @@ int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl 
 
     if (cf == Begin)
     {
-        (*initialSet)[0] = _SET;
+        (*initialSet)[0] = 0x02;
     }
-    else if (cf == End )
-        (*initialSet)[0] = _DISC;
+    else
+        (*initialSet)[0] = 0x03;
 
     //TYPE - LENGTH - VALUE
 

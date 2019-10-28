@@ -124,11 +124,11 @@ int main(int argc, char **argv)
 
 
 	//======= UA Control DATA PACKET
-	unsigned char * UAControl;
+	/*unsigned char * UAControl;
 	int sizeUAControl = 5;
 	UAControl = getSETDataPacket(NULL, 0, _UA);
 
-	write(linkLayerData.fd, UAControl, sizeUAControl);
+	write(linkLayerData.fd, UAControl, sizeUAControl);*/
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);
