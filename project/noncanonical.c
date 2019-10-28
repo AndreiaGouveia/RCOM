@@ -46,8 +46,6 @@ int main(int argc, char **argv)
       exit(-1);
     }
 
-	linkLayerData.fd = fd;	
-
 	unsigned char *initialDataPacket;
 	int sizeInitialDataPacket = 0;
 

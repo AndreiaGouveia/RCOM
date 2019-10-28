@@ -52,6 +52,8 @@ int LLOPEN(char * porta, int flag)
 
   printf("New termios structure set\n");
 
+  linkLayerData.fd = fd;
+
   return fd;
 }
 

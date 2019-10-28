@@ -35,8 +35,6 @@ int main(int argc, char **argv)
       exit(-1);
     }
 
-	linkLayerData.fd = fd;
-
 	//storing info
 	size_t fileSize;
 	FILE * file = fopen(argv[2], "rb");
