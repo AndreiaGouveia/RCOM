@@ -126,7 +126,6 @@ int checkBCC2(unsigned char SET[], int sizeMessage)
 void receivedOK(int fd, unsigned char controlBit)
 {
 
-
 	unsigned char sendDataPacket[5];
 
 	sendDataPacket[0] = FLAG;
@@ -150,14 +149,14 @@ void receivedOK(int fd, unsigned char controlBit)
 		sendDataPacket[2] = _RR;
 
 		sendDataPacket[2] |= controlBit << 1;
-		
+
 		break;
 
 	case 0x00:
 		sendDataPacket[2] = _RR;
 
 		sendDataPacket[2] |= controlBit << 1;
-		
+
 		break;
 
 	default:
@@ -172,7 +171,6 @@ void receivedOK(int fd, unsigned char controlBit)
 
 	write(fd, sendDataPacket, 5);
 }
-
 
 int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 {
@@ -195,7 +193,6 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
 			if (checkBCC2(*dataPacket, *sizeDataPacket))
 			{
-
 				receivedOK(fd, SET[2]);
 				printf("Received the info correctly!\n");
 			}
@@ -213,7 +210,7 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 	return 0;
 }
 
-int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char ** nameOfFile, int * sizeOfName, int * sizeOfFile)
+int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char **nameOfFile, int *sizeOfName, int *sizeOfFile)
 {
 
 	for (int i = 5; i < sizeInitialDataPacket; i++)
@@ -234,9 +231,9 @@ int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
 				(*sizeOfFile) |= initialDataPacket[j];
 				i++;
 			}
-
-
-		} else if(initialDataPacket[i] == 0x01){
+		}
+		else if (initialDataPacket[i] == 0x01)
+		{
 
 			i++;
 			*sizeOfName = initialDataPacket[i];
@@ -257,13 +254,14 @@ int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
 	return 0;
 }
 
-int getData(unsigned char * dataPacket, int sizeDataPacket, unsigned char ** fullFile, int beginPosition){
+int getData(unsigned char *dataPacket, int sizeDataPacket, unsigned char **fullFile, int beginPosition)
+{
+	int numOctets = 256*dataPacket[6] + dataPacket[7];
 
-int i;
-	for(i = 8; i < sizeDataPacket - 2; i++){
-
-	(*fullFile)[i-8 + beginPosition] = dataPacket[i];
+	for (int i = 0; i < numOctets; i++)
+	{
+		(*fullFile)[i + beginPosition] = dataPacket[i+8];
 	}
 
-	return i - 8;
+	return numOctets;
 }

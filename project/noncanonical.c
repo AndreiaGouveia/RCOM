@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 
 	int infoReceived = 0;
 
-	int n = 0;
+	int expectedNumSeq = 0;
 	int returnValueGetData = 0;
 
 	unsigned char * fullFile = malloc(sizeof(unsigned char)*sizeOfFile);
@@ -79,7 +79,6 @@ int main(int argc, char **argv)
 	//FILE IS COMING
 	while (infoReceived < sizeOfFile)
 	{
-
 		unsigned char *dataPacket;
 		int sizeDataPacket = 0;
 
@@ -88,7 +87,22 @@ int main(int argc, char **argv)
 		if (LLREAD(fd, &dataPacket, &sizeDataPacket) == 0)
 			infoReceived += sizeDataPacket - 10;
 
-		n++;
+		expectedNumSeq ++;
+
+
+		//Checks if the control field is correct. In this case 0x01 -> data packet transaction.
+		if(dataPacket[4] != 0x01) {
+			printf("Control field of data packets should be 0x01.");
+			return 1;
+		}
+
+
+		//Checks if the sequence number of the packet matches the nº of the packet received.
+		if(dataPacket[5] != expectedNumSeq ) {
+			printf("Sequence number doesn't match.");
+			return 1;
+		}
+		
 
 		int returnValue = getData(dataPacket, sizeDataPacket, &fullFile, beginPosition);
 		returnValueGetData += returnValue;
@@ -97,7 +111,7 @@ int main(int argc, char **argv)
 			printf("%0x ", dataPacket[i]);
 
 		printf("\nSize of the last data packet: %d\n", sizeDataPacket);
-		printf("Received so far: %d, %d, %d\n\n", infoReceived, n, returnValueGetData);
+		printf("Received so far: %d, %d, %d\n\n", infoReceived, expectedNumSeq, returnValueGetData);
 	}
 
 	printf("GOT OUT OF CYCLE\n");
