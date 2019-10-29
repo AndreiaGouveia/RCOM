@@ -242,8 +242,12 @@ int LLREAD(unsigned char **dataPacket, int *sizeDataPacket)
 
 		stateMachine(&n, buf[0], SET, &sizeMessage);
 
+		printf("N: %d\n", n);
+		printf("buf %0x\n", buf[0]);
+
 		if (n == 6)
 		{
+			printf("PASSOU\n");
 			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
 
 			if (checkBCC2(*dataPacket, *sizeDataPacket))
@@ -388,7 +392,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		}
 		break;
 	case 3:
-		if (byte_received == BCC)
+		if (byte_received == SET[*sizeMessage - 1] ^ SET[*sizeMessage - 2])
 		{
 			SET[*sizeMessage] = byte_received;
 			*state = 4;

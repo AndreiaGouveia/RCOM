@@ -134,6 +134,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	unsigned char *UAdataPacket;
+	int sizeUAdataPacket = 0;
+
+	printf("aqui!\n");
+
+	while(LLREAD(&UAdataPacket, &sizeUAdataPacket)==1);
+
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFileEND, sizeOfNameEND, sizeOfFileEND);
