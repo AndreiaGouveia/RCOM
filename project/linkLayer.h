@@ -33,6 +33,8 @@ int readResponse(unsigned char originalFlag, unsigned char cFlag);
 
 void atende();
 
+int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket);
+
 
 int LLREAD(unsigned char **dataPacket, int *sizeDataPacket);
 

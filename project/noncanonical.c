@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
 
 	//Initial DataPacket (ther real information is coming after this one)
-	while (LLREAD(&initialDataPacket, &sizeInitialDataPacket) == 1);
+	readDataPacketSendResponse(&initialDataPacket, &sizeInitialDataPacket);
 
 	char *nameOfFile;
 	int sizeOfName = 0;
@@ -83,8 +83,9 @@ int main(int argc, char **argv)
 
 		int beginPosition = infoReceived;
 
-		if (LLREAD(&dataPacket, &sizeDataPacket) == 0)
-			infoReceived += sizeDataPacket - 10;
+		readDataPacketSendResponse(&dataPacket, &sizeDataPacket);
+		
+		infoReceived += sizeDataPacket - 10;
 
 		expectedNumSeq ++;
 
@@ -122,7 +123,7 @@ int main(int argc, char **argv)
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	while(LLREAD(&endDataPacket, &sizeEndDataPacket)==1);
+	readDataPacketSendResponse(&endDataPacket, &sizeEndDataPacket);
 	
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;
@@ -139,7 +140,7 @@ int main(int argc, char **argv)
 
 	printf("aqui!\n");
 
-	//while(LLREAD(&UAdataPacket, &sizeUAdataPacket)==1);
+	LLREAD(&UAdataPacket, &sizeUAdataPacket);
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
