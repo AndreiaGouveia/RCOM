@@ -139,7 +139,7 @@ int main(int argc, char **argv)
 
 	printf("aqui!\n");
 
-	while(LLREAD(&UAdataPacket, &sizeUAdataPacket)==1);
+	//while(LLREAD(&UAdataPacket, &sizeUAdataPacket)==1);
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
