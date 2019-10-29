@@ -117,8 +117,7 @@ int LLCLOSE(int fd)
 
 //WRITER FUNCTIONS
 
-//ALTERAR VALOR DE RETORNO PARA NUMERO DE CARARTERES ESCRITOS
-int LLWRITE(unsigned char *buffer, int length)
+int LLWRITE(int fd, unsigned char *buffer, int length)
 {
 	unsigned char buf[255];
 
@@ -129,8 +128,8 @@ int LLWRITE(unsigned char *buffer, int length)
 
 	printf("\n");
 
-	int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-	printf("%d bytes written\n", res);
+	int wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
+	printf("%d bytes written\n", wrt);
 	alarm(3);
 
 	int n = 0;
@@ -144,7 +143,7 @@ int LLWRITE(unsigned char *buffer, int length)
 			return -1;
 		}
 
-		res = read(linkLayerData.fd, &buf[n], 1);
+		int res = read(linkLayerData.fd, &buf[n], 1);
 
 		//If the read is successful cancels the alarm. If not it continues trying to read
 		if (res != -1)
@@ -160,8 +159,8 @@ int LLWRITE(unsigned char *buffer, int length)
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
 			{
 				printf(" \n ---- REPEAT ----\n");
-				int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-				printf("%d bytesrepeated\n", res);
+				wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
+				printf("%d bytesrepeated\n", wrt);
 				alarm(3);
 			}
 			else
@@ -175,7 +174,7 @@ int LLWRITE(unsigned char *buffer, int length)
 
 	printf("\n HEREE2 \n");
 
-	return 0;
+	return wrt;
 }
 
 int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing)
