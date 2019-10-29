@@ -27,7 +27,7 @@ int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullDa
 		(*fullData)[i+4] = data[i];
 
     
-    getBCC2(data, sizeData, &(*fullData)[sizeData + 4]);
+    getBCC2((*fullData), (* sizefullData) - 1, &(*fullData)[sizeData + 4]);
 }
 
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
@@ -69,7 +69,7 @@ int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl 
     //alocating the space for the initialSet
     int sizeOfNumberFileSize = ceil(log2(fileSize)/8.0);
     int sizeOfName = strlen(fileName) + 1;
-    (*sizeInitialSet) = (sizeOfNumberFileSize + 5 + sizeOfName) * sizeof(unsigned char);
+    (*sizeInitialSet) = (sizeOfNumberFileSize + 6 + sizeOfName) * sizeof(unsigned char);
     (*initialSet) = (unsigned char *)malloc((*sizeInitialSet));
 
     if (cf == Begin)
@@ -108,6 +108,8 @@ int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl 
     {
         (*initialSet)[i + 3 + offset] = fileName[i];
     }
+
+    getBCC2((*initialSet), (*sizeInitialSet) - 1, (*initialSet) + offset + sizeOfName + 3);
 
     return 0;
 }

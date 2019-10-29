@@ -79,6 +79,11 @@ int LLWRITE(unsigned char *buffer, int length)
 
     stuffing(buffer, length);
 
+	for(int i = 0; i < linkLayerData.sizeFrame; i++)
+	printf("%0x ", linkLayerData.frame[i]);
+
+	printf("\n");
+
     int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
     printf("%d bytes written\n", res);
     alarm(3);
