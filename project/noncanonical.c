@@ -38,7 +38,8 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
-	fd = LLOPEN(argv[1], RECEIVER);
+	int porta = atoi(&argv[1][9]);
+	fd = LLOPEN(porta, RECEIVER);
 
 	if (fd < 0)
     {
