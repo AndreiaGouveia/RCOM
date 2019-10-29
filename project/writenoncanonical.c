@@ -26,8 +26,9 @@ int main(int argc, char **argv)
 		printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1 name_of_file\n");
 		exit(1);
 	}
-
-	int fd = LLOPEN(argv[1], TRANSMITTER);
+	
+	int porta = atoi(&argv[1][9]);
+	int fd = LLOPEN(porta, TRANSMITTER);
 
 	if (fd < 0)
     {
@@ -58,6 +59,8 @@ int main(int argc, char **argv)
 	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
 
 	LLWRITE(setStart, 5 + sizeStartData);
+
+	printf("\nsize data: %ld ........... size correct: %d\n",sizeof(setStart),5+sizeStartData);
 
 	//=====Send FILE Data=====
 	unsigned char tempData[100];

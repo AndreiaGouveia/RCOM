@@ -2,16 +2,63 @@
 
 struct termios oldtio, newtio;
 
-int LLOPEN(char *porta, int flag)
+char * getPort(int porta){
+	switch (porta)
+	{
+	case 0:
+		return COM0;
+		break;
+
+	case 1:
+		return COM1;
+		break;
+
+	case 2:
+		return COM2;
+		break;
+
+	case 3:
+		return COM3;
+		break;
+
+	case 4:
+		return COM4;
+		break;
+
+	case 5:
+		return COM5;
+		break;
+
+	case 6:
+		return COM6;
+		break;
+
+	case 7:
+		return COM7;
+		break;							
+	
+	default :
+		printf("porta %d", porta);
+		perror ("Port does not exist");
+		exit(-1);
+		break;
+	}
+}
+
+int LLOPEN( int porta, int flag)
 {
 	int fd;
+
+	char * portaSerie = getPort(porta);
+
+	printf("\n porta:  %s loool\n", portaSerie);
 	if (flag == TRANSMITTER)
 	{
-		fd = open(porta, O_RDWR | O_NOCTTY | O_NONBLOCK);
+		fd = open(portaSerie, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	}
 	else if (flag == RECEIVER)
 	{
-		fd = open(porta, O_RDWR | O_NOCTTY);
+		fd = open(portaSerie, O_RDWR | O_NOCTTY);
 	}
 
 	/*
