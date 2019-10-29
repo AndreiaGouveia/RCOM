@@ -235,7 +235,7 @@ int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
 
 		if (checkBCC2(*dataPacket, *sizeDataPacket))
 		{
-			receivedOK(SET[2]);
+			receivedOK((*dataPacket)[2]);
 			printf("Received the info correctly!\n");
 
 			break;
