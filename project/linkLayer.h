@@ -33,7 +33,7 @@ int LLOPEN( int porta, int flag);
 
 int LLCLOSE(int fd);
 
-int LLWRITE(unsigned char *buffer, int length);
+int LLWRITE(int fd , unsigned char *buffer, int length);
 
 int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing);
 

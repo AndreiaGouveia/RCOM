@@ -58,7 +58,11 @@ int main(int argc, char **argv)
 
 	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
 
-	LLWRITE(setStart, 5 + sizeStartData);
+	if(LLWRITE(fd,setStart, 5 + sizeStartData)<0)
+	{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+	}
 
 	printf("\nsize data: %ld ........... size correct: %d\n",sizeof(setStart),5+sizeStartData);
 
@@ -78,7 +82,11 @@ int main(int argc, char **argv)
 		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
 		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
 
-		LLWRITE(dataPacket, sizefullDataPacket + 5);
+		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+		}
 
 		//prints para ver a quantidade de info que manda!
 		counter += SIZE_DATA;
@@ -104,7 +112,11 @@ int main(int argc, char **argv)
 		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
 		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
 
-		LLWRITE(dataPacket, sizefullDataPacket + 5);
+		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+		}
 
 		counter += fileSize % SIZE_DATA;
 
@@ -123,7 +135,11 @@ int main(int argc, char **argv)
 
 	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
 
-	LLWRITE(setEnd, 5 + sizeEndData);
+	if(LLWRITE(fd,setEnd, 5 + sizeEndData)<0)
+	{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+	}
 
 
 	//======= UA Control DATA PACKET
