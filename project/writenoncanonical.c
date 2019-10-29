@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
 	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
 
-	LLWRITE(setStart, 6 + sizeStartData);
+	LLWRITE(setStart, 5 + sizeStartData);
 
 	//=====Send FILE Data=====
 	unsigned char tempData[100];
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
 		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
 
-		LLWRITE(dataPacket, sizefullDataPacket + 6);
+		LLWRITE(dataPacket, sizefullDataPacket + 5);
 
 		counter += fileSize % SIZE_DATA;
 
@@ -120,12 +120,12 @@ int main(int argc, char **argv)
 
 	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
 
-	LLWRITE(setEnd, 6 + sizeEndData);
+	LLWRITE(setEnd, 5 + sizeEndData);
 
 
 	//======= UA Control DATA PACKET
 	unsigned char * UAControl;
-	int sizeUAControl = 6;
+	int sizeUAControl = 5;
 	UAControl = getSETDataPacket(NULL, 0, _UA);
 
 	write(linkLayerData.fd, UAControl, sizeUAControl);

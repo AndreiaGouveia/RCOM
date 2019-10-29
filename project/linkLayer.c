@@ -245,7 +245,7 @@ int LLREAD(unsigned char **dataPacket, int *sizeDataPacket)
 		printf("N: %d\n", n);
 		printf("buf %0x\n", buf[0]);
 
-		if (n == 6)
+		if (n == 5)
 		{
 			printf("PASSOU\n");
 			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
@@ -404,20 +404,15 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		else
 			*state = 0;
 		break;
-
 	case 4:
-		SET[*sizeMessage] = byte_received;
-		*state = 5;
-		break;
-	case 5:
 		SET[*sizeMessage] = byte_received;
 
 		if (byte_received == FLAG)
 		{
-			*state = 6;
+			*state = 5;
 		}
 		else
-			*state = 5;
+			*state = 4;
 		break;
 	}
 

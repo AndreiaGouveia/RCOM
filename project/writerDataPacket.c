@@ -14,7 +14,7 @@ void getBCC2(unsigned char *data, int sizeData, unsigned char *BBC2)
 
 int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullData, int * sizefullData, int nSeq){
 
-	(* sizefullData) = sizeData+4;
+	(* sizefullData) = sizeData+5;
 
 	(*fullData) = malloc(sizeof(unsigned char) * (*sizefullData));
 	
@@ -23,15 +23,16 @@ int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullDa
 	(*fullData)[2] = sizeData/256;
 	(*fullData)[3] = sizeData % 256;
 
-	//memcpy(dest, src, strlen(src)+1);
-
 	for(int i = 0; i < sizeData; i++)
 		(*fullData)[i+4] = data[i];
+
+    
+    getBCC2(data, sizeData, &(*fullData)[sizeData + 4]);
 }
 
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
 {
-    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 6) * sizeof(unsigned char));
+    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 5) * sizeof(unsigned char));
 
     setBefore[0] = FLAG;
     setBefore[1] = A;
@@ -43,9 +44,7 @@ unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned cha
         setBefore[i + 3] = data[i - 1];
     }
 
-    getBCC2(data, sizeData, &setBefore[sizeData + 4]);
-
-    setBefore[sizeData + 5] = FLAG;
+    setBefore[sizeData + 4] = FLAG;
 
     return setBefore;
 }
