@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
 		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
 
-		LLWRITE(dataPacket, sizefullDataPacket + 6);
+		LLWRITE(dataPacket, sizefullDataPacket + 5);
 
 		//prints para ver a quantidade de info que manda!
 		counter += SIZE_DATA;
