@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 
 	//======= UA Control DATA PACKET
 	unsigned char * UAControl;
-	int sizeUAControl = 5;
+	int sizeUAControl = 6;
 	UAControl = getSETDataPacket(NULL, 0, _UA);
 
 	write(linkLayerData.fd, UAControl, sizeUAControl);
