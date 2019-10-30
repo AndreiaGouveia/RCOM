@@ -11,6 +11,7 @@
 
 #include "linkLayer.h"
 #include "receiverDataPacket.h"
+#include "linkLayerReceiver.h"
 
 #define RECEIVER 0
 #define TRANSMITTER 1
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 
 
 	//Initial DataPacket (ther real information is coming after this one)
-	recivingInformationDataPacket(&initialDataPacket, &sizeInitialDataPacket, Start);
+	recivingInformationDataPacket(fd, &initialDataPacket, &sizeInitialDataPacket, Start);
 
 	char *nameOfFile;
 	int sizeOfName = 0;
@@ -77,7 +78,7 @@ int main(int argc, char **argv)
 
 		int beginPosition = infoReceived;
 
-		recivingInformationDataPacket(&dataPacket, &sizeDataPacket, Data);
+		recivingInformationDataPacket(fd, &dataPacket, &sizeDataPacket, Data);
 		
 		infoReceived += sizeDataPacket - 10;
 
@@ -116,7 +117,7 @@ int main(int argc, char **argv)
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	recivingInformationDataPacket(&endDataPacket, &sizeEndDataPacket, End_);
+	recivingInformationDataPacket(fd, &endDataPacket, &sizeEndDataPacket, End_);
 	
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;
@@ -129,10 +130,11 @@ int main(int argc, char **argv)
 	}
 
 	unsigned char *UAdataPacket;
+	int sizeUAdataPacket;
 
 	printf("aqui!\n");
 
-	LLREAD(fd, &UAdataPacket);
+	LLREAD(fd, &UAdataPacket, &sizeUAdataPacket);
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
