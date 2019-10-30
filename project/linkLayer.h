@@ -10,15 +10,6 @@
 #include <termios.h>
 #include "flags.h"
 
-#define COM0 "/dev/ttyS0"
-#define COM1 "/dev/ttyS1"
-#define COM2 "/dev/ttyS2"
-#define COM3 "/dev/ttyS3"
-#define COM4 "/dev/ttyS4"
-#define COM5 "/dev/ttyS5"
-#define COM6 "/dev/ttyS6"
-#define COM7 "/dev/ttyS7"
-
 typedef struct
 {
     int fd;
@@ -90,7 +81,7 @@ void atende();
  * @param sizeDataPacket Pointer to an int that will hold the size of the dataPacket array
  * 
 */
-void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket, enum TypeDataPacketI typeDataPacketI);
+void recivingInformationDataPacket(unsigned char **dataPacket, int *sizeDataPacket, enum TypeDataPacketI typeDataPacketI);
 
 /**
  * Reads a Data Packet

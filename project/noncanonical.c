@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
 
 	//Initial DataPacket (ther real information is coming after this one)
-	readDataPacketSendResponse(&initialDataPacket, &sizeInitialDataPacket, Start);
+	recivingInformationDataPacket(&initialDataPacket, &sizeInitialDataPacket, Start);
 
 	char *nameOfFile;
 	int sizeOfName = 0;
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 
 		int beginPosition = infoReceived;
 
-		readDataPacketSendResponse(&dataPacket, &sizeDataPacket, Data);
+		recivingInformationDataPacket(&dataPacket, &sizeDataPacket, Data);
 		
 		infoReceived += sizeDataPacket - 10;
 
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	readDataPacketSendResponse(&endDataPacket, &sizeEndDataPacket, End_);
+	recivingInformationDataPacket(&endDataPacket, &sizeEndDataPacket, End_);
 	
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;

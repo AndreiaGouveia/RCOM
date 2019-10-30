@@ -272,7 +272,7 @@ void atende()
 
 //Receiver functions
 
-void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket, enum TypeDataPacketI typeDataPacketI)
+void recivingInformationDataPacket(unsigned char **dataPacket, int *sizeDataPacket, enum TypeDataPacketI typeDataPacketI)
 {
 
 	do
