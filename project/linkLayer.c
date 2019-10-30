@@ -51,6 +51,7 @@ int LLOPEN( int porta, int flag)
 
 	char * portaSerie = getPort(porta);
 
+	printf("\n porta:  %s loool\n", portaSerie);
 	if (flag == TRANSMITTER)
 	{
 		fd = open(portaSerie, O_RDWR | O_NOCTTY | O_NONBLOCK);
@@ -119,8 +120,6 @@ int LLCLOSE(int fd)
 int LLWRITE(int fd , unsigned char *buffer, int length)
 {
 	unsigned char buf[255];
-	unsigned char received[1];
-	int sizeBuf = 0;
 
 	stuffing(buffer, length);
 
@@ -144,7 +143,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 			return -1;
 		}
 
-		int res = read(linkLayerData.fd, received, 1);
+		int res = read(linkLayerData.fd, &buf[n], 1);
 
 		//If the read is successful cancels the alarm. If not it continues trying to read
 		if (res != -1)
@@ -154,9 +153,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 
 		//Should Have the stateMachine here to confirm when it reachs the end
 
-		stateMachine(&n, received, buf, &sizeBuf);
-
-		if (n == 5)
+		if (n != 0 && buf[n] == FLAG)
 		{
 			printf("\n --- buf2 = %x --\n", buf[2]);
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
