@@ -23,3 +23,4 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData);
 void sendControlDataPacket(int fd, enum WhichControl cf, unsigned char * fileName, FILE * file, int fileSize);
 
 void sendUA(int fd);
+void progressBar(float percentageReceived);

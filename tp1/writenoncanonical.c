@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     
     if ( (argc < 2) || 
   	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
-  	      (strcmp("/dev/ttyS4", argv[1])!=0) )) {//aqui a portas so é 4 em vez de 1 pq o pc pede o 4
+  	      (strcmp("/dev/ttyS4", argv[1])!=0) )) {//aqui a portas so ï¿½ 4 em vez de 1 pq o pc pede o 4
       printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
       exit(1);
     }
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     newtio.c_cc[VMIN]     = 1;   /* blocking read until 5 chars received */
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) próximo(s) caracter(es)
+    leitura do(s) prï¿½ximo(s) caracter(es)
   */
 
     tcflush(fd, TCIOFLUSH); //fazer fluish antes de mandar cenas
@@ -89,8 +89,8 @@ int main(int argc, char** argv)
  
 
   /* 
-    O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar 
-    o indicado no guião 
+    O ciclo FOR e as instruï¿½ï¿½es seguintes devem ser alterados de modo a respeitar 
+    o indicado no guiï¿½o 
   */
 
 	while(STOP==FALSE){

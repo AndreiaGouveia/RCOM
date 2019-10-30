@@ -179,22 +179,20 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 		//prints para ver a quantidade de info que manda!
 		counter += SIZE_DATA;
 
-		for (int j = 0; j < SIZE_DATA + 6; j++) //ciclo para visualizaç~ao do packet
-			printf("%0x ", dataPacket[j]);
-
-		printf("\nWrote so far: %d, %d\n\n", counter, i);
-
 		if ((counter + SIZE_DATA) >= fileSize)
 			break;
 		
 		indice++;
+
+        progressBar((double) (counter * 100)/ fileSize);
 	}
 
 	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
 	if ((fileSize % SIZE_DATA) != 0)
 	{
 
-		indice++;
+        indice++;
+
 		unsigned char * fulldataPacket;
 		int sizefullDataPacket;
 
@@ -209,11 +207,20 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 
 		counter += fileSize % SIZE_DATA;
 
-		for (int j = 0; j < fileSize % SIZE_DATA + 6; j++)
-			printf("%0x ", dataPacket[j]);
-
-		printf("\nWrote so far: %d\n\n", counter);
+        progressBar((double) (counter * 100)/ fileSize);
 	}
+}
+
+void progressBar(float percentageReceived){
+
+	printf("\rCompleted: %f[", percentageReceived);
+
+	for(int i = 0; i < percentageReceived; i += 5){
+		printf("=");
+	}
+	printf("]");
+	
+	fflush (stdout);
 }
 
 

@@ -48,6 +48,9 @@ int main(int argc, char **argv)
 	
 	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
 
+	printf("Sending Information!\n");
+	printf("Starting to received %s with size %f!\n\n", argv[2], (double) fileSize);
+
 	sendControlDataPacket(fd, Begin, argv[2], file, fileSize);
 
 	sendFileData(fd, fileSize, fullData);
@@ -55,6 +58,9 @@ int main(int argc, char **argv)
 	sendControlDataPacket(fd, End, argv[2], file, fileSize);
 
 	sendUA(fd);
+
+
+	printf("\n\nSent File Sucessfuly! Go check out %s!\n", argv[2]);
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);

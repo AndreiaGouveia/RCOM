@@ -12,7 +12,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	stuffing(buffer, length);
 
 	int wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-	printf("%d bytes written\n", wrt);
+	//printf("%d bytes written\n", wrt);
 	alarm(3);
 
 	int n = 0;
@@ -38,9 +38,8 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 		{
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
 			{
-				printf(" \n ---- REPEAT ----\n");
 				wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-				printf("%d bytesrepeated\n", wrt);
+				//printf("%d bytesrepeated\n", wrt);
 				alarm(3);
 			}
 			else
@@ -131,13 +130,13 @@ int readResponse(unsigned char originalFlag, unsigned char cFlag)
 void atende()
 {
 
-	printf("Trying to send again\n");
+	printf("Trying to send data packet again\n");
 
 	if (linkLayerData.numTransmissions < 3)
 	{
 
 		int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-		printf("%d bytes written\n", res);
+		//printf("%d bytes written\n", res);
 
 		alarm(3);
 	}
