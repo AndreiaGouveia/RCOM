@@ -4,11 +4,11 @@
 #define C_SET_1 0x00
 #define BCC A ^ C_SET
 
-#define _SET 0x03
-#define _DISC 0x0B
-#define _UA 0x07
-#define _RR 0x05
-#define _REJ 0x01
+#define _SET 0x03 //set up
+#define _DISC 0x0B //disconnect
+#define _UA 0x07 //unnumbered acknowledgment
+#define _RR 0x05 //receiver ready
+#define _REJ 0x01 //reject
 
 #define STUFFING 0x7d
 #define EXCLUSIVE_OR_STUFFING 0x20
@@ -16,18 +16,19 @@
 #define RECEIVER 0
 #define TRANSMITTER 1
 
-#define BAUDRATE B38400
+#define BAUDRATE B38400 /*transmission velocity*/
 #define MODEMDEVICE "/dev/ttyS1"
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-#define SIZE_DATA 100
+#define SIZE_DATA 100 /* size of data in each transaction*/
 
-#define C_DATA 0x01
-#define C_START 0x02
-#define C_END 0x03
+//Control field of control packets
+#define C_DATA 0x01 /*data transmission*/
+#define C_START 0x02 /*beginning of transmission*/
+#define C_END 0x03 /*end of transmission*/
 
-
+//serial ports
 #define COM0 "/dev/ttyS0"
 #define COM1 "/dev/ttyS1"
 #define COM2 "/dev/ttyS2"
