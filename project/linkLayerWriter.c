@@ -34,9 +34,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 		int res = read(linkLayerData.fd, &buf[n], 1);
 
 		//If the read is successful cancels the alarm. If not it continues trying to read
-		if (res != -1)
-			alarm(0);
-		else
+		if (res == -1)
 			continue;
 
 		//Should Have the stateMachine here to confirm when it reachs the end
@@ -59,6 +57,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 
 	} while (1);
 
+	alarm(0);
 	return wrt;
 }
 

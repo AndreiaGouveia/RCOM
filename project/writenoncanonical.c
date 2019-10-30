@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < fileSize; i += SIZE_DATA)
 	{
-		indice++;
+		
 		unsigned char * fulldataPacket;
 		int sizefullDataPacket;
 
@@ -95,6 +95,8 @@ int main(int argc, char **argv)
 
 		if ((counter + SIZE_DATA) >= fileSize)
 			break;
+		
+		indice++;
 	}
 
 	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
