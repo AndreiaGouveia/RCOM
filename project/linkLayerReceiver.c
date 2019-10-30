@@ -60,13 +60,13 @@ void recivingInformationDataPacket(int fd, unsigned char **dataPacket, int *size
         if (checkErrors(*dataPacket, *sizeDataPacket, typeDataPacketI))
         {
             sendResponse(fd, (*dataPacket)[2]);
-            printf("Received the info correctly!\n");
+            //printf("Received the info correctly!\n");
 
             break;
         }
 
         sendResponse(fd, _REJ);
-        printf("Something went wrong!\n");
+        //printf("Something went wrong!\n");
 
     } while (TRUE);
 }

@@ -11,20 +11,6 @@
 
 #include "linkLayer.h"
 #include "receiverDataPacket.h"
-#include "linkLayerReceiver.h"
-
-#define RECEIVER 0
-#define TRANSMITTER 1
-
-#define BAUDRATE B38400
-#define _POSIX_SOURCE 1 /* POSIX compliant source */
-#define FALSE 0
-#define TRUE 1
-
-#define FLAG 0x7e
-#define A 0x03
-#define C_SET 0x40
-#define BCC A ^ C_SET
 
 int main(int argc, char **argv)
 {
@@ -48,26 +34,25 @@ int main(int argc, char **argv)
       exit(-1);
     }
 
-	unsigned char *initialDataPacket;
-	int sizeInitialDataPacket = 0;
-
+	printf("Waiting for information!\n");
 
 	//Initial DataPacket (ther real information is coming after this one)
+	unsigned char *initialDataPacket;
+	int sizeInitialDataPacket = 0;
+	
 	recivingInformationDataPacket(fd, &initialDataPacket, &sizeInitialDataPacket, Start);
 
+	//Getting File Info
 	char *nameOfFile;
 	int sizeOfName = 0;
 	int sizeOfFile = 0;
 
 	getInfoFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
-	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
+	printf("Starting to received %s with size %d!\n\n", nameOfFile, sizeOfFile);
 
 	int infoReceived = 0;
-
-	int expectedNumSeq = 0;
 	int returnValueGetData = 0;
-
 	unsigned char * fullFile = malloc(sizeof(unsigned char)*sizeOfFile);
 
 	//FILE IS COMING
@@ -85,46 +70,22 @@ int main(int argc, char **argv)
 		int returnValue = getData(dataPacket, sizeDataPacket, &fullFile, beginPosition);
 		returnValueGetData += returnValue;
 
-		printf("Received so far: %d, %d, %d\n\n", infoReceived, expectedNumSeq, returnValueGetData);
+		progressBar(((double )returnValueGetData / sizeOfFile) * 100);
 	}
 
-
-	for (int i = 0; i < sizeOfFile; i++)
-		printf("%0x ", fullFile[i]);
-
+	//Final DataPacket
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
-
 	recivingInformationDataPacket(fd, &endDataPacket, &sizeEndDataPacket, End_);
 	
-	char * nameOfFileEND;
-	int sizeOfNameEND = 0;
-	int sizeOfFileEND = 0;
-
-	//Checks if the control field is correct. In this case 0x03 -> end of transaction
-	if(endDataPacket[4] != 0x03) {
-		printf("The control field of the end control packet should be 0x03.");
-		return 1;
-	}
-
+	//UA DataPacket
 	unsigned char *UAdataPacket;
 	int sizeUAdataPacket;
-
 	readInfoDataPacket(fd, &UAdataPacket, &sizeUAdataPacket);
-	getInfoFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
-
-	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFileEND, sizeOfNameEND, sizeOfFileEND);
-
 	
-	FILE * finishFile = fopen(nameOfFile, "wb+");
+	createFile(nameOfFile, sizeOfFile, fullFile);
 
-	if(finishFile == NULL)
-	{
-		perror("Could not create file");
-		exit (-1);
-	}
-
-	fwrite(fullFile, sizeof(unsigned char), sizeOfFile, finishFile);
+	printf("\n\nCreated File Sucessfuly! Go check out %s!\n", nameOfFile);
 	
 	sleep(1);
 

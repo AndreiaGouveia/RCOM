@@ -55,3 +55,29 @@ int getData(unsigned char *dataPacket, int sizeDataPacket, unsigned char **fullF
 
 	return numOctets;
 }
+
+void createFile(unsigned char * nameOfFile, int sizeOfFile, unsigned char * fullFile){
+	FILE * finishFile = fopen(nameOfFile, "wb+");
+
+	if(finishFile == NULL)
+	{
+		perror("Could not create file");
+		exit (-1);
+	}
+
+	fwrite(fullFile, sizeof(unsigned char), sizeOfFile, finishFile);
+	
+}
+
+
+void progressBar(float percentageReceived){
+
+	printf("\rCompleted: %f[", percentageReceived);
+
+	for(int i = 0; i < percentageReceived; i += 5){
+		printf("=");
+	}
+	printf("]");
+	
+	fflush (stdout);
+}

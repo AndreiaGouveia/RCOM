@@ -51,7 +51,6 @@ int LLOPEN( int porta, int flag)
 
 	char * portaSerie = getPort(porta);
 
-	printf("\n porta:  %s loool\n", portaSerie);
 	if (flag == TRANSMITTER)
 	{
 		fd = open(portaSerie, O_RDWR | O_NOCTTY | O_NONBLOCK);
@@ -95,7 +94,7 @@ int LLOPEN( int porta, int flag)
 		exit(-1);
 	}
 
-	printf("New termios structure set\n");
+	printf("New termios structure set!\n");
 
 	return fd;
 }
