@@ -11,11 +11,6 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 
 	stuffing(buffer, length);
 
-	for (int i = 0; i < linkLayerData.sizeFrame; i++)
-		printf("%0x ", linkLayerData.frame[i]);
-
-	printf("\n");
-
 	int wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 	printf("%d bytes written\n", wrt);
 	alarm(3);
@@ -136,7 +131,7 @@ int readResponse(unsigned char originalFlag, unsigned char cFlag)
 void atende()
 {
 
-	printf("atendeu\n");
+	printf("Trying to send again\n");
 
 	if (linkLayerData.numTransmissions < 3)
 	{

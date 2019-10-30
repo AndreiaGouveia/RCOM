@@ -10,7 +10,6 @@
 
 #include "linkLayer.h"
 #include "writerDataPacket.h"
-#include "linkLayerWriter.h"
 
 int main(int argc, char **argv)
 {
@@ -21,7 +20,8 @@ int main(int argc, char **argv)
 	if ((argc < 3) ||
 		((strcmp("/dev/ttyS0", argv[1]) != 0) &&
 		 (strcmp("/dev/ttyS1", argv[1]) != 0) && (strcmp("/dev/ttyS2", argv[1]) != 0) &&
-		 (strcmp("/dev/ttyS4", argv[1]) != 0)))
+		 (strcmp("/dev/ttyS4", argv[1]) != 0) &&(strcmp("/dev/ttyS5", argv[1]) != 0)  &&
+		 (strcmp("/dev/ttyS6", argv[1]) != 0) &&(strcmp("/dev/ttyS7", argv[1]) != 0) ))
 	{
 		printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1 name_of_file\n");
 		exit(1);
@@ -48,104 +48,13 @@ int main(int argc, char **argv)
 	
 	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
 
-	//=====Send Start====
-	unsigned char *startData;
-	int sizeStartData = 0;
+	sendControlDataPacket(fd, Begin, argv[2], file, fileSize);
 
-	getControlDataPacket(file, argv[2], Begin, fileSize, &startData, &sizeStartData);
-	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
+	sendFileData(fd, fileSize, fullData);
 
-	if(LLWRITE(fd, setStart, 5 + sizeStartData)<0)
-	{
-		perror("\nLLWRITE went wrong");
-		exit(-1);
-	}
+	sendControlDataPacket(fd, End, argv[2], file, fileSize);
 
-	printf("\nsize data: %ld ........... size correct: %d\n",sizeof(setStart),5+sizeStartData);
-
-	//=====Send FILE Data=====
-	unsigned char tempData[100];
-	unsigned char *dataPacket;
-	int indice = 0;
-
-	int counter = 0;
-
-	for (int i = 0; i < fileSize; i += SIZE_DATA)
-	{
-		
-		unsigned char * fulldataPacket;
-		int sizefullDataPacket;
-
-		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
-
-		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
-		{
-		perror("\nLLWRITE went wrong");
-		exit(-1);
-		}
-
-		//prints para ver a quantidade de info que manda!
-		counter += SIZE_DATA;
-
-		for (int j = 0; j < SIZE_DATA + 6; j++) //ciclo para visualizaç~ao do packet
-			printf("%0x ", dataPacket[j]);
-
-		printf("\nWrote so far: %d, %d\n\n", counter, i);
-
-		if ((counter + SIZE_DATA) >= fileSize)
-			break;
-		
-		indice++;
-	}
-
-	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
-	if ((fileSize % SIZE_DATA) != 0)
-	{
-
-		indice++;
-		unsigned char * fulldataPacket;
-		int sizefullDataPacket;
-
-		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
-
-		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
-		{
-		perror("\nLLWRITE went wrong");
-		exit(-1);
-		}
-
-		counter += fileSize % SIZE_DATA;
-
-		for (int j = 0; j < fileSize % SIZE_DATA + 6; j++)
-			printf("%0x ", dataPacket[j]);
-
-		printf("\nWrote so far: %d\n\n", counter);
-	}
-
-	//=====Send FINAL====
-	unsigned char *endData;
-
-	int sizeEndData = 6 + strlen(argv[2]);
-
-	getControlDataPacket(file, argv[2], End, fileSize, &endData, &sizeEndData);
-
-	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
-
-	if(LLWRITE(fd,setEnd, 5 + sizeEndData)<0)
-	{
-		perror("\nLLWRITE went wrong");
-		exit(-1);
-	}
-
-
-	//======= UA Control DATA PACKET
-	unsigned char * UAControl;
-	int sizeUAControl = 5;
-	UAControl = getSETDataPacket(NULL, 0, _UA);
-
-	write(fd, UAControl, sizeUAControl);
+	sendUA(fd);
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);

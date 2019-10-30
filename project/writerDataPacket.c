@@ -129,4 +129,91 @@ unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName)
     return fullData;
 }
 
+void sendUA(int fd){
+
+	unsigned char * UAControl;
+	int sizeUAControl = 5;
+	UAControl = getSETDataPacket(NULL, 0, _UA);
+
+	write(fd, UAControl, sizeUAControl);
+}
+
+void sendControlDataPacket(int fd, enum WhichControl cf, unsigned char * fileName, FILE * file, int fileSize){
+	unsigned char *endData;
+
+	int sizeEndData = 6 + strlen(fileName);
+	getControlDataPacket(file, fileName, cf, fileSize, &endData, &sizeEndData);
+
+	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
+
+	if(LLWRITE(fd,setEnd, 5 + sizeEndData)<0)
+	{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+	}
+
+}
+
+void sendFileData(int fd, int fileSize, unsigned char * fullData){
+    	//=====Send FILE Data=====
+	unsigned char *dataPacket;
+	int indice = 0;
+
+	int counter = 0;
+
+	for (int i = 0; i < fileSize; i += SIZE_DATA)
+	{
+		
+		unsigned char * fulldataPacket;
+		int sizefullDataPacket;
+
+		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
+		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
+
+		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+		}
+
+		//prints para ver a quantidade de info que manda!
+		counter += SIZE_DATA;
+
+		for (int j = 0; j < SIZE_DATA + 6; j++) //ciclo para visualizaç~ao do packet
+			printf("%0x ", dataPacket[j]);
+
+		printf("\nWrote so far: %d, %d\n\n", counter, i);
+
+		if ((counter + SIZE_DATA) >= fileSize)
+			break;
+		
+		indice++;
+	}
+
+	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
+	if ((fileSize % SIZE_DATA) != 0)
+	{
+
+		indice++;
+		unsigned char * fulldataPacket;
+		int sizefullDataPacket;
+
+		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
+		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
+
+		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		{
+		perror("\nLLWRITE went wrong");
+		exit(-1);
+		}
+
+		counter += fileSize % SIZE_DATA;
+
+		for (int j = 0; j < fileSize % SIZE_DATA + 6; j++)
+			printf("%0x ", dataPacket[j]);
+
+		printf("\nWrote so far: %d\n\n", counter);
+	}
+}
+
 
