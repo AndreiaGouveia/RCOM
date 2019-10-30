@@ -137,11 +137,10 @@ int main(int argc, char **argv)
 	}
 
 	unsigned char *UAdataPacket;
-	int sizeUAdataPacket = 0;
 
 	printf("aqui!\n");
 
-	LLREAD(&UAdataPacket, &sizeUAdataPacket);
+	LLREAD(fd, &UAdataPacket);
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
