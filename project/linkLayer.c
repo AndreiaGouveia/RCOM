@@ -277,7 +277,9 @@ int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
 
 	do
 	{
-		LLREAD(linkLayerData.fd ,dataPacket, sizeDataPacket);
+		LLREAD(linkLayerData.fd ,dataPacket);
+
+		*sizeDataPacket = linkLayerData.sizeFrame;
 
 		if (checkBCC2(*dataPacket, *sizeDataPacket))
 		{
@@ -293,7 +295,7 @@ int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
 	} while (TRUE);
 }
 
-int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
+int LLREAD(int fd, unsigned char **dataPacket)
 {
 	int res = 0;
 	unsigned char buf[5];
@@ -310,7 +312,7 @@ int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
 		if (n == 5)
 		{
-			destuffing(SET, sizeMessage, dataPacket, sizeDataPacket);
+			destuffing(SET, sizeMessage, dataPacket, &linkLayerData.sizeFrame);
 
 			break;
 		}
