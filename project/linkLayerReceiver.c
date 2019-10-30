@@ -31,7 +31,7 @@ int LLREAD(int fd, unsigned char **dataPacket)
                 expectedNumSeq++;
 
                 sendResponse(fd, internalDataPacket[2]);
-                printf("Received the info correctly!\n");
+                //printf("Received the info correctly!\n");
 
                 *dataPacket = internalDataPacket;
 
@@ -41,7 +41,7 @@ int LLREAD(int fd, unsigned char **dataPacket)
 
         //Arives here if the bcc2 is not correct or the trama number is not correct
         sendResponse(fd, _REJ);
-        printf("Something went wrong!\n");
+        //printf("Something went wrong!\n");
 
         free(internalDataPacket);
 
@@ -113,6 +113,7 @@ void sendResponse(int fd, unsigned char controlBit)
 
     case _DISC:
         sendDataPacket[2] = _DISC;
+        sendDataPacket[1] = A_1;
         break;
 
     case _UA:

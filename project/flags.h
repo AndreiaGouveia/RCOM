@@ -1,5 +1,6 @@
 #define FLAG 0x7e
 #define A 0x03
+#define A_1 0x03
 #define C_SET 0x40
 #define C_SET_1 0x00
 #define BCC A ^ C_SET
