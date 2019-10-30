@@ -285,9 +285,6 @@ int checkBCC2(unsigned char SET[], int sizeSET)
         BCC2 ^= SET[i];
     }
 
-    printf("%0x\n", BCC2);
-    printf("%0x\n", SET[sizeSET - 2]);
-
     if (BCC2 == SET[sizeSET - 2])
         return TRUE;
     else
