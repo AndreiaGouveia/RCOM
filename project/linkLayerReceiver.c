@@ -23,7 +23,7 @@ int LLREAD(int fd, unsigned char **dataPacket)
         }
 
         //Checks if the sequence number is the one we want
-        if (internalDataPacket[5] > expectedNumSeq)
+        if (internalDataPacket[5] == expectedNumSeq)
         {
             if (checkErrors(internalDataPacket, sizeDataPacket, Data))
             {
