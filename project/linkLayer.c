@@ -480,22 +480,22 @@ int checkErrors(unsigned char SET[], int sizeSET, enum TypeDataPacketI typeDataP
 	switch (typeDataPacketI)
 	{
 	case Start:
-		if(SET[4] != C_START)
-			return FALSE;
+		if(SET[4] == C_START)
+			return TRUE;
 		break;
 	
 	case Data:
-		if(SET[4] != C_DATA)
-			return FALSE;
+		if(SET[4] == C_DATA)
+			return TRUE;
 		break;
 
 	case End_:
-		if(SET[4] != C_END)
-			return FALSE;
+		if(SET[4] == C_END)
+			return TRUE;
 		break;
 	}
 
-	return TRUE;
+	return FALSE;
 	
 }
 

@@ -24,5 +24,5 @@
 #define SIZE_DATA 100
 
 #define C_DATA 0x01
-#define C_START 0x00
+#define C_START 0x02
 #define C_END 0x03

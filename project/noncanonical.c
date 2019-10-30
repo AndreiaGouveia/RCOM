@@ -52,18 +52,11 @@ int main(int argc, char **argv)
 
 
 	//Initial DataPacket (ther real information is coming after this one)
-	readDataPacketSendResponse(&initialDataPacket, &sizeInitialDataPacket);
+	readDataPacketSendResponse(&initialDataPacket, &sizeInitialDataPacket, Start);
 
 	char *nameOfFile;
 	int sizeOfName = 0;
 	int sizeOfFile = 0;
-
-
-	//Checks if the control field is correct. In this case 0x02 -> beginning of transaction
-	if(initialDataPacket[4] != 0x02) {
-		printf("The control field of the initial control packet should be 0x02.");
-		return 1;
-	}
 
 	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
@@ -84,18 +77,11 @@ int main(int argc, char **argv)
 
 		int beginPosition = infoReceived;
 
-		readDataPacketSendResponse(&dataPacket, &sizeDataPacket);
+		readDataPacketSendResponse(&dataPacket, &sizeDataPacket, Data);
 		
 		infoReceived += sizeDataPacket - 10;
 
 		expectedNumSeq ++;
-
-
-		//Checks if the control field is correct. In this case 0x01 -> data packet transaction.
-		if(dataPacket[4] != 0x01) {
-			printf("Control field of data packets should be 0x01.");
-			return 1;
-		}
 
 
 		//Checks if the sequence number of the packet matches the nº of the packet received.
@@ -124,7 +110,7 @@ int main(int argc, char **argv)
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 
-	readDataPacketSendResponse(&endDataPacket, &sizeEndDataPacket);
+	readDataPacketSendResponse(&endDataPacket, &sizeEndDataPacket, End_);
 	
 	char * nameOfFileEND;
 	int sizeOfNameEND = 0;
