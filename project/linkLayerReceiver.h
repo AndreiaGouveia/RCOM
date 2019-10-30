@@ -30,7 +30,10 @@ void recivingInformationDataPacket(int fd, unsigned char **dataPacket, int *size
  * 
  * @return Return the number of bits read (size of dataPacket)
 */
-int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket);
+int LLREAD(int fd, unsigned char **dataPacket);
+
+
+int readInfoDataPacket(int fd, unsigned char **dataPacket, int *sizeDataPacket);
 
 /**
 * Sends the Response to a Information Data Packet (I)

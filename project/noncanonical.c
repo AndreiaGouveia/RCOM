@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	int sizeOfName = 0;
 	int sizeOfFile = 0;
 
-	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
+	getInfoFile(initialDataPacket, sizeInitialDataPacket, &nameOfFile, &sizeOfName, &sizeOfFile);
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFile, sizeOfName, sizeOfFile);
 
@@ -78,37 +78,15 @@ int main(int argc, char **argv)
 
 		int beginPosition = infoReceived;
 
-		recivingInformationDataPacket(fd, &dataPacket, &sizeDataPacket, Data);
+		sizeDataPacket = LLREAD(fd, &dataPacket);
 		
-		infoReceived += sizeDataPacket - 10;
-
-		expectedNumSeq ++;
-
-
-		//Checks if the sequence number of the packet matches the nº of the packet received.
-		if(dataPacket[5] > expectedNumSeq) {
-			printf("Sequence number doesn't match.");
-			return 1;
-		}
-
-		if(dataPacket[5] < expectedNumSeq)
-		{
-			infoReceived -= sizeDataPacket - 10;
-			continue;
-		}
-		
+		infoReceived += sizeDataPacket - 10;		
 
 		int returnValue = getData(dataPacket, sizeDataPacket, &fullFile, beginPosition);
 		returnValueGetData += returnValue;
 
-		for (int i = 0; i < sizeDataPacket; i++)
-			printf("%0x ", dataPacket[i]);
-
-		printf("\nSize of the last data packet: %d\n", sizeDataPacket);
 		printf("Received so far: %d, %d, %d\n\n", infoReceived, expectedNumSeq, returnValueGetData);
 	}
-
-	printf("GOT OUT OF CYCLE\n");
 
 
 	for (int i = 0; i < sizeOfFile; i++)
@@ -132,11 +110,8 @@ int main(int argc, char **argv)
 	unsigned char *UAdataPacket;
 	int sizeUAdataPacket;
 
-	printf("aqui!\n");
-
-	LLREAD(fd, &UAdataPacket, &sizeUAdataPacket);
-
-	getSizeFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
+	readInfoDataPacket(fd, &UAdataPacket, &sizeUAdataPacket);
+	getInfoFile(initialDataPacket, sizeInitialDataPacket, &nameOfFileEND, &sizeOfNameEND, &sizeOfFileEND);
 
 	printf("Name: %s, SizeName: %d, SizeOfFile: %d\n\n", nameOfFileEND, sizeOfNameEND, sizeOfFileEND);
 

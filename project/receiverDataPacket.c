@@ -1,6 +1,6 @@
 #include "receiverDataPacket.h"
 
-int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char **nameOfFile, int *sizeOfName, int *sizeOfFile)
+int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char **nameOfFile, int *sizeOfName, int *sizeOfFile)
 {
 
 	for (int i = 5; i < sizeInitialDataPacket; i++)

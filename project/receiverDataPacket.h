@@ -7,6 +7,6 @@
 #include <unistd.h>
 #include <signal.h>
 
-int getSizeFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char ** nameOfFile, int * sizeOfName, int * sizeOfFile);
+int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char ** nameOfFile, int * sizeOfName, int * sizeOfFile);
 
 int getData(unsigned char * dataPacket, int sizeDataPacket, unsigned char ** fullFile, int beginPosition);
