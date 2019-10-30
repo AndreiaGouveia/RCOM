@@ -272,7 +272,7 @@ void atende()
 
 //Receiver functions
 
-int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
+void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket, TypeDataPacketI typeDataPacketI)
 {
 
 	do
@@ -281,15 +281,15 @@ int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
 
 		*sizeDataPacket = linkLayerData.sizeFrame;
 
-		if (checkBCC2(*dataPacket, *sizeDataPacket))
+		if (checkErrors(*dataPacket, *sizeDataPacket, typeDataPacketI))
 		{
-			receivedOK((*dataPacket)[2]);
+			sendResponse((*dataPacket)[2]);
 			printf("Received the info correctly!\n");
 
 			break;
 		}
 
-		receivedOK(0x77);
+		sendResponse(_REJ);
 		printf("Something went wrong and the BCC2 is not correct!\n");
 
 	} while (TRUE);
@@ -321,7 +321,7 @@ int LLREAD(int fd, unsigned char **dataPacket)
 	return 0;
 }
 
-void receivedOK(unsigned char controlBit)
+void sendResponse(unsigned char controlBit)
 {
 
 	unsigned char sendDataPacket[5];
@@ -343,14 +343,14 @@ void receivedOK(unsigned char controlBit)
 		sendDataPacket[2] = _UA;
 		break;
 
-	case 0x40:
+	case C_SET:
 		sendDataPacket[2] = _RR;
 
 		sendDataPacket[2] |= controlBit << 1;
 
 		break;
 
-	case 0x00:
+	case C_SET_1:
 		sendDataPacket[2] = _RR;
 
 		sendDataPacket[2] |= controlBit << 1;
@@ -406,7 +406,7 @@ int destuffing(unsigned char *SET, int sizeSET, unsigned char **afterDestuffing,
 	return 0;
 }
 
-void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeMessage)
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeSET)
 {
 
 	switch (*state)
@@ -469,6 +469,34 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 	}
 
 	(*sizeMessage)++;
+}
+
+
+int checkErrors(unsigned char SET[], int sizeSET, TypeDataPacketI typeDataPacketI){
+
+	if(!checkBCC2(SET, sizeMessage))
+		return FALSE;
+
+	switch (typeDataPacketI)
+	{
+	case Start:
+		if(SET[4] != C_START)
+			return FALSE;
+		break;
+	
+	case Data:
+		if(SET[4] != C_DATA)
+			return FALSE;
+		break;
+
+	case End:
+		if(SET[4] != C_END)
+			return FALSE;
+		break;
+	}
+
+	return TRUE;
+	
 }
 
 int checkBCC2(unsigned char SET[], int sizeMessage)

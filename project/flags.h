@@ -1,6 +1,7 @@
 #define FLAG 0x7e
 #define A 0x03
 #define C_SET 0x40
+#define C_SET_1 0x00
 #define BCC A ^ C_SET
 
 #define _SET 0x03
@@ -21,3 +22,7 @@
 #define FALSE 0
 #define TRUE 1
 #define SIZE_DATA 100
+
+#define C_DATA 0x01
+#define C_START 0x00
+#define C_END 0x03
