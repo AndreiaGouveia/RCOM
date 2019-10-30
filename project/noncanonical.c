@@ -85,9 +85,15 @@ int main(int argc, char **argv)
 
 
 		//Checks if the sequence number of the packet matches the nº of the packet received.
-		if(dataPacket[5] != expectedNumSeq) {
+		if(dataPacket[5] > expectedNumSeq) {
 			printf("Sequence number doesn't match.");
 			return 1;
+		}
+
+		if(dataPacket[5] < expectedNumSeq)
+		{
+			infoReceived -= sizeDataPacket - 10;
+			continue;
 		}
 		
 
