@@ -43,7 +43,6 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 
 		if (n != 0 && buf[n] == FLAG)
 		{
-			printf("\n --- buf2 = %x --\n", buf[2]);
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
 			{
 				printf(" \n ---- REPEAT ----\n");
@@ -59,8 +58,6 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 		n++;
 
 	} while (1);
-
-	printf("\n HEREE2 \n");
 
 	return wrt;
 }
@@ -106,13 +103,10 @@ int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing)
 
 int readResponse(unsigned char originalFlag, unsigned char cFlag)
 {
-	printf("\n Original Flag: %x \n", originalFlag);
-	printf("\n C Flag: %x \n", cFlag);
 
 	//Se for a trama inicial esta a espera de um UA
 	if (originalFlag == _SET)
 	{
-		printf("\n HEREE \n");
 		if (cFlag == _UA)
 			return 0;
 		return 1;

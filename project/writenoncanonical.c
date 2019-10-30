@@ -97,7 +97,6 @@ int main(int argc, char **argv)
 			break;
 	}
 
-	printf("SAIU DO CICLO!\n\n");
 	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
 	if ((fileSize % SIZE_DATA) != 0)
 	{
