@@ -10,7 +10,7 @@
 
 #include "linkLayer.h"
 #include "writerDataPacket.h"
-unsigned char buf[255];
+#include "linkLayerWriter.h"
 
 int main(int argc, char **argv)
 {
@@ -53,12 +53,9 @@ int main(int argc, char **argv)
 	int sizeStartData = 0;
 
 	getControlDataPacket(file, argv[2], Begin, fileSize, &startData, &sizeStartData);
-
-	printf("SizeFile: %ld\n", fileSize);
-
 	unsigned char *setStart = getSETDataPacket(startData, sizeStartData, _SET);
 
-	if(LLWRITE(fd,setStart, 5 + sizeStartData)<0)
+	if(LLWRITE(fd, setStart, 5 + sizeStartData)<0)
 	{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -147,7 +144,7 @@ int main(int argc, char **argv)
 	int sizeUAControl = 5;
 	UAControl = getSETDataPacket(NULL, 0, _UA);
 
-	write(linkLayerData.fd, UAControl, sizeUAControl);
+	write(fd, UAControl, sizeUAControl);
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);
