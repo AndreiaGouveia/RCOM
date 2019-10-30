@@ -45,7 +45,7 @@ void atende();
 int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket);
 
 
-int LLREAD(unsigned char **dataPacket, int *sizeDataPacket);
+int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket);
 
 
 void receivedOK(unsigned char controlBit);

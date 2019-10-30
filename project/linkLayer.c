@@ -117,7 +117,7 @@ int LLCLOSE(int fd)
 
 //WRITER FUNCTIONS
 
-int LLWRITE(int fd, unsigned char *buffer, int length)
+int LLWRITE(int fd , unsigned char *buffer, int length)
 {
 	unsigned char buf[255];
 
@@ -277,7 +277,7 @@ int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
 
 	do
 	{
-		LLREAD(dataPacket, sizeDataPacket);
+		LLREAD(linkLayerData.fd ,dataPacket, sizeDataPacket);
 
 		if (checkBCC2(*dataPacket, *sizeDataPacket))
 		{
@@ -293,7 +293,7 @@ int readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket)
 	} while (TRUE);
 }
 
-int LLREAD(unsigned char **dataPacket, int *sizeDataPacket)
+int LLREAD(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 {
 	int res = 0;
 	unsigned char buf[5];
@@ -304,7 +304,7 @@ int LLREAD(unsigned char **dataPacket, int *sizeDataPacket)
 
 	while (1)
 	{
-		res = read(linkLayerData.fd, buf, 1);
+		res = read(fd, buf, 1);
 
 		stateMachine(&n, buf[0], SET, &sizeMessage);
 
