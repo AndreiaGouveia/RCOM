@@ -272,7 +272,7 @@ void atende()
 
 //Receiver functions
 
-void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket, TypeDataPacketI typeDataPacketI)
+void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket, enum TypeDataPacketI typeDataPacketI)
 {
 
 	do
@@ -302,17 +302,17 @@ int LLREAD(int fd, unsigned char **dataPacket)
 
 	unsigned char SET[255];
 	int n = 0;
-	int sizeMessage = 0;
+	int sizeSET = 0;
 
 	while (1)
 	{
 		res = read(fd, buf, 1);
 
-		stateMachine(&n, buf[0], SET, &sizeMessage);
+		stateMachine(&n, buf[0], SET, &sizeSET);
 
 		if (n == 5)
 		{
-			destuffing(SET, sizeMessage, dataPacket, &linkLayerData.sizeFrame);
+			destuffing(SET, sizeSET, dataPacket, &linkLayerData.sizeFrame);
 
 			break;
 		}
@@ -415,14 +415,14 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 	case 0:
 		if (byte_received == FLAG)
 		{
-			SET[*sizeMessage] = byte_received;
+			SET[*sizeSET] = byte_received;
 			*state = 1;
 		}
 		break;
 	case 1:
 		if (byte_received == A)
 		{
-			SET[*sizeMessage] = byte_received;
+			SET[*sizeSET] = byte_received;
 			*state = 2;
 		}
 		else if (byte_received != FLAG)
@@ -431,7 +431,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 	case 2:
 		if (byte_received == C_SET || byte_received == _SET || byte_received == _DISC || byte_received == _UA)
 		{
-			SET[*sizeMessage] = byte_received;
+			SET[*sizeSET] = byte_received;
 			*state = 3;
 		}
 		else if (byte_received == FLAG)
@@ -444,9 +444,9 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		}
 		break;
 	case 3:
-		if (byte_received == SET[*sizeMessage - 1] ^ SET[*sizeMessage - 2])
+		if (byte_received == SET[*sizeSET - 1] ^ SET[*sizeSET - 2])
 		{
-			SET[*sizeMessage] = byte_received;
+			SET[*sizeSET] = byte_received;
 			*state = 4;
 		}
 		else if (byte_received == FLAG)
@@ -457,7 +457,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 			*state = 0;
 		break;
 	case 4:
-		SET[*sizeMessage] = byte_received;
+		SET[*sizeSET] = byte_received;
 
 		if (byte_received == FLAG)
 		{
@@ -468,13 +468,13 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 		break;
 	}
 
-	(*sizeMessage)++;
+	(*sizeSET)++;
 }
 
 
-int checkErrors(unsigned char SET[], int sizeSET, TypeDataPacketI typeDataPacketI){
+int checkErrors(unsigned char SET[], int sizeSET, enum TypeDataPacketI typeDataPacketI){
 
-	if(!checkBCC2(SET, sizeMessage))
+	if(!checkBCC2(SET, sizeSET))
 		return FALSE;
 
 	switch (typeDataPacketI)
@@ -489,7 +489,7 @@ int checkErrors(unsigned char SET[], int sizeSET, TypeDataPacketI typeDataPacket
 			return FALSE;
 		break;
 
-	case End:
+	case End_:
 		if(SET[4] != C_END)
 			return FALSE;
 		break;
@@ -499,21 +499,21 @@ int checkErrors(unsigned char SET[], int sizeSET, TypeDataPacketI typeDataPacket
 	
 }
 
-int checkBCC2(unsigned char SET[], int sizeMessage)
+int checkBCC2(unsigned char SET[], int sizeSET)
 {
 
 	unsigned char BCC2 = 0x00;
 
-	for (int i = 4; i < sizeMessage - 2; i++)
+	for (int i = 4; i < sizeSET - 2; i++)
 	{
 
 		BCC2 ^= SET[i];
 	}
 
 	printf("%0x\n", BCC2);
-	printf("%0x\n", SET[sizeMessage - 2]);
+	printf("%0x\n", SET[sizeSET - 2]);
 
-	if (BCC2 == SET[sizeMessage - 2])
+	if (BCC2 == SET[sizeSET - 2])
 		return TRUE;
 	else
 		return FALSE;

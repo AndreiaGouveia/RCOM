@@ -30,7 +30,7 @@ typedef struct
 linkLayer linkLayerData;
 
 enum TypeDataPacketI { Start,
-                    End, Data};
+                    End_, Data};
 
 
 /**
@@ -90,7 +90,7 @@ void atende();
  * @param sizeDataPacket Pointer to an int that will hold the size of the dataPacket array
  * 
 */
-void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket);
+void readDataPacketSendResponse(unsigned char **dataPacket, int *sizeDataPacket, enum TypeDataPacketI typeDataPacketI);
 
 /**
  * Reads a Data Packet
@@ -141,7 +141,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
 * 
 * @return Return 1 when the data packet has no detected errors and 0 otherwise
 */
-int checkBCC2(unsigned char SET[], int sizeMessage);
+int checkBCC2(unsigned char SET[], int sizeSET);
 
 /**
 * Checks for errors in an information data packet (I)
@@ -152,4 +152,4 @@ int checkBCC2(unsigned char SET[], int sizeMessage);
 * 
 * @return Return 1 when the data packet has no detected errors and 0 otherwise
 */
-int checkErrors(unsigned char SET[], int sizeSET, TypeDataPacketI typeDataPacketI);
+int checkErrors(unsigned char SET[], int sizeSET, enum TypeDataPacketI typeDataPacketI);
