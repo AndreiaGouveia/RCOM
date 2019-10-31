@@ -14,8 +14,7 @@
 
 int main(int argc, char **argv)
 {
-	int fd, c, res;
-	unsigned char buf[5];
+	int fd;
 
 	if ((argc < 2) ||
 		((strcmp("/dev/ttyS0", argv[1]) != 0) &&
@@ -39,7 +38,7 @@ int main(int argc, char **argv)
 	//Initial DataPacket (ther real information is coming after this one)
 	unsigned char *initialDataPacket;
 	int sizeInitialDataPacket = 0;
-	
+
 	recivingInformationDataPacket(fd, &initialDataPacket, &sizeInitialDataPacket, Start);
 
 	//Getting File Info
@@ -64,10 +63,10 @@ int main(int argc, char **argv)
 		int beginPosition = infoReceived;
 
 		sizeDataPacket = LLREAD(fd, &dataPacket);
-		
-		infoReceived += sizeDataPacket - 10;		
 
-		int returnValue = getData(dataPacket, sizeDataPacket, &fullFile, beginPosition);
+		infoReceived += sizeDataPacket - 10;
+
+		int returnValue = getData(dataPacket, &fullFile, beginPosition);
 		returnValueGetData += returnValue;
 
 		progressBar(((double )returnValueGetData / sizeOfFile) * 100);
@@ -77,16 +76,16 @@ int main(int argc, char **argv)
 	unsigned char *endDataPacket;
 	int sizeEndDataPacket = 0;
 	recivingInformationDataPacket(fd, &endDataPacket, &sizeEndDataPacket, End_);
-	
+
 	//UA DataPacket
 	unsigned char *UAdataPacket;
 	int sizeUAdataPacket;
 	readInfoDataPacket(fd, &UAdataPacket, &sizeUAdataPacket);
-	
+
 	createFile(nameOfFile, sizeOfFile, fullFile);
 
 	printf("\n\nCreated File Sucessfuly! Go check out %s!\n", nameOfFile);
-	
+
 	sleep(1);
 
 	if (LLCLOSE(fd) == -1)

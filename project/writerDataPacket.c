@@ -28,6 +28,8 @@ int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullDa
 
     
     getBCC2((*fullData), (* sizefullData) - 1, &(*fullData)[sizeData + 4]);
+
+return 0;
 }
 
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
@@ -63,12 +65,12 @@ long int findSize(FILE *fp)
     return res;
 }
 
-int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
+int getControlDataPacket(char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
 {
 
     //alocating the space for the initialSet
     int sizeOfNumberFileSize = ceil(log2(fileSize)/8.0);
-    int sizeOfName = strlen(fileName) + 1;
+    int sizeOfName = (int) strlen((char *) fileName) + 1;
     (*sizeInitialSet) = (sizeOfNumberFileSize + 6 + sizeOfName) * sizeof(unsigned char);
     (*initialSet) = (unsigned char *)malloc((*sizeInitialSet));
 
@@ -139,11 +141,11 @@ void sendUA(int fd){
 	write(fd, UAControl, sizeUAControl);
 }
 
-void sendControlDataPacket(int fd, enum WhichControl cf, unsigned char * fileName, FILE * file, int fileSize){
+void sendControlDataPacket(int fd, enum WhichControl cf, char * fileName, int fileSize){
 	unsigned char *endData;
 
-	int sizeEndData = 6 + strlen(fileName);
-	getControlDataPacket(file, fileName, cf, fileSize, &endData, &sizeEndData);
+	int sizeEndData = 6 + (int) strlen((char *) fileName);
+	getControlDataPacket(fileName, cf, fileSize, &endData, &sizeEndData);
 
 	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
 

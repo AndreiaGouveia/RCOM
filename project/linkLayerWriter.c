@@ -130,13 +130,12 @@ int readResponse(unsigned char originalFlag, unsigned char cFlag)
 void atende()
 {
 
-	printf("Trying to send data packet again\n");
+	printf("\nTrying to send data packet again\n");
 
 	if (linkLayerData.numTransmissions < 3)
 	{
 
-		int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-		//printf("%d bytes written\n", res);
+		write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 
 		alarm(3);
 	}

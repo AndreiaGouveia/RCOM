@@ -2,7 +2,7 @@
 
 int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char **nameOfFile, int *sizeOfName, int *sizeOfFile)
 {
-	
+
 	for (int i = 5; i < sizeInitialDataPacket; i++)
 	{
 		//gets size of file
@@ -45,7 +45,7 @@ int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
 	return 0;
 }
 
-int getData(unsigned char *dataPacket, int sizeDataPacket, unsigned char **fullFile, int beginPosition)
+int getData(unsigned char *dataPacket, unsigned char **fullFile, int beginPosition)
 {
 	int numOctets = 256*dataPacket[6] + dataPacket[7];
 
@@ -58,7 +58,7 @@ int getData(unsigned char *dataPacket, int sizeDataPacket, unsigned char **fullF
 	return numOctets;
 }
 
-void createFile(unsigned char * nameOfFile, int sizeOfFile, unsigned char * fullFile){
+void createFile( char * nameOfFile, int sizeOfFile, unsigned char * fullFile){
 	FILE * finishFile = fopen(nameOfFile, "wb+");//create file
 
 	if(finishFile == NULL)//checks if creation went ok
@@ -68,7 +68,7 @@ void createFile(unsigned char * nameOfFile, int sizeOfFile, unsigned char * full
 	}
 
 	fwrite(fullFile, sizeof(unsigned char), sizeOfFile, finishFile);//parse the info from the fullFile to our final file
-	
+
 }
 
 
@@ -80,6 +80,6 @@ void progressBar(float percentageReceived){
 		printf("=");
 	}
 	printf("]");
-	
+
 	fflush (stdout);
 }

@@ -15,7 +15,6 @@ enum WhichControl { Begin,
 /**
  * gets the full control data packet to be sent
  *
- * @param fileToBeSent discriptor of the file to be sent
  * @param fileName name of the file to be sent
  * @param cf know if it is begin or end
  * @param fileSize size of file
@@ -25,7 +24,7 @@ enum WhichControl { Begin,
  * @return Returns 0 if everything went as expected, other number if an error occured
  *
 */
-int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
+int getControlDataPacket(char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
 
 /**
  * Adds flags to the dataPacket
@@ -89,7 +88,7 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData);
  * @return void
  *
 */
-void sendControlDataPacket(int fd, enum WhichControl cf, unsigned char * fileName, FILE * file, int fileSize);
+void sendControlDataPacket(int fd, enum WhichControl cf, char * fileName, int fileSize);
 
 /**
  * Send UA packet

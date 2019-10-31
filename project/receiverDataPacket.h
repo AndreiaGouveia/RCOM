@@ -34,7 +34,7 @@ int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
  * @return Returns 0 if everything went as expected, other number if an error occured
  *
 */
-int getData(unsigned char * dataPacket, int sizeDataPacket, unsigned char ** fullFile, int beginPosition);
+int getData(unsigned char * dataPacket, unsigned char ** fullFile, int beginPosition);
 
 /**
  * Creates a file with the information received (in our fullFile array)
@@ -46,7 +46,7 @@ int getData(unsigned char * dataPacket, int sizeDataPacket, unsigned char ** ful
  * @return void
  *
 */
-void createFile(unsigned char * nameOfFile, int sizeOfFile, unsigned char * fullFile);
+void createFile( char * nameOfFile, int sizeOfFile, unsigned char * fullFile);
 
 /**
  * Prints the progress bar
