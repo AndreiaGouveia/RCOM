@@ -2,10 +2,10 @@
 
 int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, char **nameOfFile, int *sizeOfName, int *sizeOfFile)
 {
-
+	
 	for (int i = 5; i < sizeInitialDataPacket; i++)
 	{
-
+		//gets size of file
 		if (initialDataPacket[i] == 0x00)
 		{
 
@@ -22,6 +22,7 @@ int getInfoFile(unsigned char *initialDataPacket, int sizeInitialDataPacket, cha
 				i++;
 			}
 		}
+		//gets name of file
 		else if (initialDataPacket[i] == 0x01)
 		{
 
@@ -48,6 +49,7 @@ int getData(unsigned char *dataPacket, int sizeDataPacket, unsigned char **fullF
 {
 	int numOctets = 256*dataPacket[6] + dataPacket[7];
 
+	//parses the data from the dataPacket to the fullFile
 	for (int i = 0; i < numOctets; i++)
 	{
 		(*fullFile)[i + beginPosition] = dataPacket[i+8];
@@ -57,15 +59,15 @@ int getData(unsigned char *dataPacket, int sizeDataPacket, unsigned char **fullF
 }
 
 void createFile(unsigned char * nameOfFile, int sizeOfFile, unsigned char * fullFile){
-	FILE * finishFile = fopen(nameOfFile, "wb+");
+	FILE * finishFile = fopen(nameOfFile, "wb+");//create file
 
-	if(finishFile == NULL)
+	if(finishFile == NULL)//checks if creation went ok
 	{
 		perror("Could not create file");
 		exit (-1);
 	}
 
-	fwrite(fullFile, sizeof(unsigned char), sizeOfFile, finishFile);
+	fwrite(fullFile, sizeof(unsigned char), sizeOfFile, finishFile);//parse the info from the fullFile to our final file
 	
 }
 

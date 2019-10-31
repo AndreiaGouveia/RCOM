@@ -10,17 +10,103 @@
 #include "linkLayerWriter.h"
 
 enum WhichControl { Begin,
-                    End};
+                    End}; //enum that tells if we are dealing with the initial or final message
 
+/**
+ * gets the full control data packet to be sent
+ *
+ * @param fileToBeSent discriptor of the file to be sent
+ * @param fileName name of the file to be sent
+ * @param cf know if it is begin or end
+ * @param fileSize size of file
+ * @param initialSet new packet to be sent
+ * @param sizeInitialSet size of new packet
+ *
+ * @return Returns 0 if everything went as expected, other number if an error occured
+ *
+*/
 int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
+
+/**
+ * Adds flags to the dataPacket
+ *
+ * @param data data array to be sent
+ * @param sizeData size of the data array
+ * @param CFlag C flag to be sent
+ *
+ * @return Returns a data packet ready to be sent
+ *
+*/
 unsigned char *getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
+
+/**
+ * Reads file
+ *
+ * @param file file descriptor
+ * @param size size of file to be sent
+ * @param filename name of file to be sent
+ *
+ * @return void
+ *
+*/
 unsigned char *readFile(FILE *file, size_t *size, unsigned char *fileName);
 
+/**
+ * Gets the full data packet
+ *
+ * @param data data too be sent
+ * @param sizeData suze of data
+ * @param fullData full data packet
+ * @param sizefullData szze of final data packet
+ * @param nSeq number of the packet 
+ *
+ * @return Returns 0 if everything went as expected, other number if an error occured
+ *
+*/
 int getFullDataPacket(unsigned char *data, int sizeData, unsigned char **fullData, int *sizefullData, int nSeq);
 
+/**
+ * Prints the progress bar
+ *
+ * @param fd port to send packet
+ * @param fileSize size of file  
+ * @param fullData packet to be sent 
+ *
+ * @return void
+ *
+*/
 void sendFileData(int fd, int fileSize, unsigned char * fullData);
 
+/**
+ * Sends crontol data packet
+ *
+ * @param fd port to send packet
+ * @param cf know if it is begin or end
+ * @param fileName name of file 
+ * @param file file descriptor 
+ * @param fileSize size of file 
+ *
+ * @return void
+ *
+*/
 void sendControlDataPacket(int fd, enum WhichControl cf, unsigned char * fileName, FILE * file, int fileSize);
 
+/**
+ * Send UA packet
+ *
+ * @param fd  port to send packet
+ *
+ * @return void
+ *
+*/
 void sendUA(int fd);
+
+/**
+ * Prints the progress bar
+ *
+ * @param percentageReceived current percentage of progress bar
+ *
+ * @return void
+ *
+*/
 void progressBar(float percentageReceived);

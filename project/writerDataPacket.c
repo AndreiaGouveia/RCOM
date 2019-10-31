@@ -72,6 +72,7 @@ int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl 
     (*sizeInitialSet) = (sizeOfNumberFileSize + 6 + sizeOfName) * sizeof(unsigned char);
     (*initialSet) = (unsigned char *)malloc((*sizeInitialSet));
 
+    //check if the control packet is the first or the last
     if (cf == Begin)
     {
         (*initialSet)[0] = 0x02;
@@ -187,7 +188,7 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
         progressBar((double) (counter * 100)/ fileSize);
 	}
 
-	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
+	//In case that the size file is not a multiple of size_data we need to the remaining bytes
 	if ((fileSize % SIZE_DATA) != 0)
 	{
 
