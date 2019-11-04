@@ -24,3 +24,13 @@ void printStatistics(){
     printf("No of REJ: %d\n", data_link_statistics.noREJ);
     printf("\n");
 }
+
+void initStatistics(){
+
+    data_link_statistics.noREJ=0;
+    data_link_statistics.noRR=0;
+    data_link_statistics.noTimeouts=0;
+    data_link_statistics.receivedFrames=0;
+    data_link_statistics.sentFrames=0;
+    data_link_statistics.timeSpent=0;
+}

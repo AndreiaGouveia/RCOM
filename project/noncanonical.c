@@ -25,6 +25,8 @@ int main(int argc, char **argv)
 		exit(1);
 	}
 
+	initStatistics();
+
 	int porta = atoi(&argv[1][9]);
 	fd = LLOPEN(porta, RECEIVER);
 

@@ -27,6 +27,8 @@ int main(int argc, char **argv)
 		printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1 name_of_file\n");
 		exit(1);
 	}
+
+	initStatistics();
 	
 	int porta = atoi(&argv[1][9]);
 	int fd = LLOPEN(porta, TRANSMITTER);
