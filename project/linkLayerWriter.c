@@ -7,6 +7,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 {
 
 	linkLayerData.fd = fd;
+	linkLayerData.numTransmissions = 0;
 	
 	unsigned char buf[255];
 
@@ -16,6 +17,8 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	stuffing(setEnd, setEndSize);
 
 	int wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
+	data_link_statistics.sentFrames++;
+
 	//printf("%d bytes written\n", wrt);
 	alarm(3);
 
@@ -43,6 +46,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 
 		if (state == 5)
 		{
+
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
 			{
 				wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
@@ -60,6 +64,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	} while (1);
 
 	alarm(0);
+
 	return wrt;
 }
 
@@ -144,9 +149,12 @@ void atende()
 	{
 
 		write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
+		data_link_statistics.sentFrames++;
 
 		alarm(3);
 	}
+
+	data_link_statistics.noTimeouts++;
 	linkLayerData.numTransmissions++;
 }
 

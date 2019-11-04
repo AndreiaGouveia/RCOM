@@ -48,12 +48,4 @@ int getData(unsigned char * dataPacket, unsigned char ** fullFile, int beginPosi
 */
 void createFile( char * nameOfFile, int sizeOfFile, unsigned char * fullFile);
 
-/**
- * Prints the progress bar
- *
- * @param percentageReceived current percentage of the progress bar
- *
- * @return void
- *
-*/
-void progressBar(float percentageReceived);
+void receiveFile(int fd, unsigned char * fullFile, int sizeOfFile);

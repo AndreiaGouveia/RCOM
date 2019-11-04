@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "linkLayer.h"
 #include "receiverDataPacket.h"
@@ -50,27 +51,15 @@ int main(int argc, char **argv)
 
 	printf("Starting to received %s with size %d!\n\n", nameOfFile, sizeOfFile);
 
-	int infoReceived = 0;
-	int returnValueGetData = 0;
+	
 	unsigned char * fullFile = malloc(sizeof(unsigned char)*sizeOfFile);
 
-	//FILE IS COMING
-	while (infoReceived < sizeOfFile)
-	{
-		unsigned char *dataPacket;
-		int sizeDataPacket = 0;
+	clock_t fileReceiveStart = clock();
 
-		int beginPosition = infoReceived;
+	receiveFile(fd, fullFile, sizeOfFile);
 
-		sizeDataPacket = LLREAD(fd, &dataPacket);
-
-		infoReceived += sizeDataPacket - 10;
-
-		int returnValue = getData(dataPacket, &fullFile, beginPosition);
-		returnValueGetData += returnValue;
-
-		progressBar(((double )returnValueGetData / sizeOfFile) * 100);
-	}
+	clock_t fileReceiveEnd = clock();
+	data_link_statistics.timeSpent = ((double) (fileReceiveStop - fileReceiveStart)) / CLOCKS_PER_SEC;
 
 	//Final DataPacket
 	unsigned char *endDataPacket;
@@ -86,10 +75,10 @@ int main(int argc, char **argv)
 
 	printf("\n\nCreated File Sucessfuly! Go check out %s!\n", nameOfFile);
 
-	sleep(1);
-
 	if (LLCLOSE(fd) == -1)
 		exit(EXIT_FAILURE);
+
+	printStatistics();
 
 	return 0;
 }

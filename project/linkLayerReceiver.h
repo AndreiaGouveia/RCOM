@@ -8,12 +8,14 @@
 #include <unistd.h>
 #include <signal.h>
 #include <termios.h>
-#include "flags.h"
+#include "utilities.h"
 
 #include "linkLayer.h"
 
 enum TypeDataPacketI { Start,
                     End_, Data};
+
+extern Statistics data_link_statistics;
 
 /**
  * Handles the reception of and Information Data Packet (I)

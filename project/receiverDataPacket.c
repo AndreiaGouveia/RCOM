@@ -71,15 +71,27 @@ void createFile( char * nameOfFile, int sizeOfFile, unsigned char * fullFile){
 
 }
 
+void receiveFile(int fd, unsigned char * fullFile, int sizeOfFile){
 
-void progressBar(float percentageReceived){
+	int infoReceived = 0;
+	int returnValueGetData = 0;
+	
+	//FILE IS COMING
+	while (infoReceived < sizeOfFile)
+	{
+		unsigned char *dataPacket;
+		int sizeDataPacket = 0;
 
-	printf("\rCompleted: %f[", percentageReceived);
+		int beginPosition = infoReceived;
 
-	for(int i = 0; i < percentageReceived; i += 5){
-		printf("=");
+		sizeDataPacket = LLREAD(fd, &dataPacket);
+
+		infoReceived += sizeDataPacket - 10;
+
+		int returnValue = getData(dataPacket, &fullFile, beginPosition);
+		returnValueGetData += returnValue;
+
+		progressBar(((double )returnValueGetData / sizeOfFile) * 100);
 	}
-	printf("]");
 
-	fflush (stdout);
 }

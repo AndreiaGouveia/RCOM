@@ -45,17 +45,17 @@ char * getPort(int porta){
 	}
 }
 
-int LLOPEN( int porta, int flag)
+int LLOPEN( int porta, enum Status status))
 {
 	int fd;
 
 	char * portaSerie = getPort(porta);
 
-	if (flag == TRANSMITTER)
+	if (status == TRANSMITTER)
 	{
 		fd = open(portaSerie, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	}
-	else if (flag == RECEIVER)
+	else if (status == RECEIVER)
 	{
 		fd = open(portaSerie, O_RDWR | O_NOCTTY);
 	}

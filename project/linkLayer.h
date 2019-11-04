@@ -8,7 +8,9 @@
 #include <unistd.h>
 #include <signal.h>
 #include <termios.h>
-#include "flags.h"
+#include "utilities.h"
+
+enum Status { TRANSMITTER, RECEIVER};
 
 /**
  * @param porta number of pipe
@@ -16,7 +18,7 @@
  * 
  * @param file descriptor of pipe in case of success, returns negative value otherwise
 */
-int LLOPEN( int porta, int flag);
+int LLOPEN( int porta, enum Status status);
 
 /**
  * @param fd file descriptor of pipe

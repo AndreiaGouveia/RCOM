@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
-#include "flags.h"
+#include "utilities.h"
 #include "linkLayerWriter.h"
 
 enum WhichControl { Begin,
@@ -87,13 +87,3 @@ void sendControlDataPacket(int fd, enum WhichControl cf, char * fileName, int fi
  *
 */
 void sendUA(int fd);
-
-/**
- * Prints the progress bar
- *
- * @param percentageReceived current percentage of progress bar
- *
- * @return void
- *
-*/
-void progressBar(float percentageReceived);

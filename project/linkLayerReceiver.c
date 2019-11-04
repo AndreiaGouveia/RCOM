@@ -15,6 +15,8 @@ int LLREAD(int fd, unsigned char **dataPacket)
 
         readInfoDataPacket(fd, &internalDataPacket, &sizeDataPacket);
 
+        data_link_statistics.receivedFrames++;
+
         //If we received a duplicated datapacket we ignore it and read what is next in the pipe
         if (internalDataPacket[5] < expectedNumSeq)
         {
@@ -35,13 +37,16 @@ int LLREAD(int fd, unsigned char **dataPacket)
 
                 *dataPacket = internalDataPacket;
 
+                data_link_statistics.noRR++;
+
                 break;
             }
         }
 
         //Arives here if the bcc2 is not correct or the trama number is not correct
         sendResponse(fd, _REJ);
-        //printf("Something went wrong!\n");
+        
+        data_link_statistics.noREJ++;
 
         free(internalDataPacket);
 

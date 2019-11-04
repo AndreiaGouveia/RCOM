@@ -148,7 +148,7 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 		int sizefullDataPacket;
 
 		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		
+
 		if(LLWRITE(fd,fulldataPacket, sizefullDataPacket)<0)
 		{
 		perror("\nLLWRITE went wrong");
@@ -189,17 +189,4 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 	}
 
 }
-
-void progressBar(float percentageReceived){
-
-	printf("\rCompleted: %f[", percentageReceived);
-
-	for(int i = 0; i < percentageReceived; i += 5){
-		printf("=");
-	}
-	printf("]");
-	
-	fflush (stdout);
-}
-
 

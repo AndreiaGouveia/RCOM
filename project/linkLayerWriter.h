@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <termios.h>
-#include "flags.h"
+#include "utilities.h"
 
 typedef struct
 {
@@ -19,6 +19,8 @@ typedef struct
 } linkLayer;
 
 linkLayer linkLayerData;
+
+extern Statistics data_link_statistics;
 
 /**
  * Transmites an array of characters

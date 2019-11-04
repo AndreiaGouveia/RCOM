@@ -1,3 +1,6 @@
+
+#include <stdio.h>
+
 #define FLAG 0x7e
 #define A 0x03
 #define A_1 0x03
@@ -13,9 +16,6 @@
 
 #define STUFFING 0x7d
 #define EXCLUSIVE_OR_STUFFING 0x20
-
-#define RECEIVER 0
-#define TRANSMITTER 1
 
 #define BAUDRATE B38400 /*transmission velocity*/
 #define MODEMDEVICE "/dev/ttyS1"
@@ -38,3 +38,23 @@
 #define COM5 "/dev/ttyS5"
 #define COM6 "/dev/ttyS6"
 #define COM7 "/dev/ttyS7"
+
+
+typedef struct {
+	int sentFrames;
+	int receivedFrames;
+    int noTimeouts;
+	int noRR;
+	int noREJ;
+  double timeSpent;
+} Statistics;
+
+Statistics data_link_statistics;
+
+/**
+ * Prints the progress bar
+ *
+ * @param percentageReceived current percentage of the progress bar
+ *
+*/
+void progressBar(float percentageReceived);
