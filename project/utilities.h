@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <termios.h>
 
 #define FLAG 0x7e
 #define A 0x03
@@ -40,6 +41,9 @@
 #define COM6 "/dev/ttyS6"
 #define COM7 "/dev/ttyS7"
 
+#define N_TRIES_TIMEOUT 3
+#define SECONDS_WAIT_TIMEOUT 3
+
 
 typedef struct {
 	int sentFrames;
@@ -61,3 +65,4 @@ Statistics data_link_statistics;
 void progressBar(float percentageReceived);
 
 void printStatistics();
+void initStatistics();

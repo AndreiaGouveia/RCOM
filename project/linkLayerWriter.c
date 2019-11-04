@@ -20,7 +20,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	data_link_statistics.sentFrames++;
 
 	//printf("%d bytes written\n", wrt);
-	alarm(3);
+	alarm(SECONDS_WAIT_TIMEOUT);
 
 	int state = 0;
 	int sizeBuf = 0;
@@ -29,7 +29,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	do
 	{
 		//Checking if it has send more than 4 times the packet
-		if (linkLayerData.numTransmissions >= 4)
+		if (linkLayerData.numTransmissions >= N_TRIES_TIMEOUT + 1)
 		{
 			printf("Didn't get a response. BYE!\n");
 			return -1;
@@ -51,7 +51,9 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 			{
 				wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 				
-				alarm(3);
+				alarm(SECONDS_WAIT_TIMEOUT);
+
+				data_link_statistics.noREJ++;
 			}
 			else
 				break;
@@ -64,6 +66,7 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	} while (1);
 
 	alarm(0);
+	data_link_statistics.noRR++;
 
 	return wrt;
 }
@@ -145,13 +148,13 @@ void atende()
 
 	printf("\nTrying to send data packet again\n");
 
-	if (linkLayerData.numTransmissions < 3)
+	if (linkLayerData.numTransmissions < N_TRIES_TIMEOUT)
 	{
 
 		write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 		data_link_statistics.sentFrames++;
 
-		alarm(3);
+		alarm(SECONDS_WAIT_TIMEOUT);
 	}
 
 	data_link_statistics.noTimeouts++;
