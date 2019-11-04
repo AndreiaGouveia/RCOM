@@ -1,3 +1,4 @@
+#pragma once
 
 #include <stdio.h>
 
@@ -58,3 +59,5 @@ Statistics data_link_statistics;
  *
 */
 void progressBar(float percentageReceived);
+
+void printStatistics();

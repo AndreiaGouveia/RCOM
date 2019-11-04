@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	receiveFile(fd, fullFile, sizeOfFile);
 
 	clock_t fileReceiveEnd = clock();
-	data_link_statistics.timeSpent = ((double) (fileReceiveStop - fileReceiveStart)) / CLOCKS_PER_SEC;
+	data_link_statistics.timeSpent = ((double) (fileReceiveEnd - fileReceiveStart)) / CLOCKS_PER_SEC;
 
 	//Final DataPacket
 	unsigned char *endDataPacket;

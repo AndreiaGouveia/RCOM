@@ -45,7 +45,7 @@ char * getPort(int porta){
 	}
 }
 
-int LLOPEN( int porta, enum Status status))
+int LLOPEN( int porta, enum Status status)
 {
 	int fd;
 

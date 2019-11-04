@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <time.h>
 
+#include "utilities.h"
 #include "linkLayer.h"
 #include "writerDataPacket.h"
 
@@ -53,12 +54,12 @@ int main(int argc, char **argv)
 
 	sendControlDataPacket(fd, Begin, argv[2], fileSize);
 
-	clock_t fileSendStart = clock();
+	clock_t fileReceiveStart = clock();
 
 	sendFileData(fd, fileSize, fullData);
 	
-	clock_t fileSendEnd = clock();
-	data_link_statistics.timeSpent = ((double) (fileReceiveStop - fileReceiveStart)) / CLOCKS_PER_SEC;
+	clock_t fileReceiveEnd = clock();
+	data_link_statistics.timeSpent = ((double) (fileReceiveEnd - fileReceiveStart)) / CLOCKS_PER_SEC;
 
 	sendControlDataPacket(fd, End, argv[2], fileSize);
 

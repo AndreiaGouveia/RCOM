@@ -8,8 +8,8 @@ C_FILES := $(wildcard $(SRCDIR)/*.c)
 
 #build options
 BUILDDIR = build
-OBJS := writerDataPacket.c linkLayerWriter.c linkLayer.c writenoncanonical.c
-OBJS_1 := linkLayerReceiver.c receiverDataPacket.c linkLayer.c noncanonical.c
+OBJS := writerDataPacket.c linkLayerWriter.c linkLayer.c writenoncanonical.c utilities.c
+OBJS_1 := linkLayerReceiver.c receiverDataPacket.c linkLayer.c noncanonical.c utilities.c
 
 #compiler options
 CFLAGS = -Wall -Wextra -Werror -pedantic
