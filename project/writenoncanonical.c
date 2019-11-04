@@ -56,12 +56,12 @@ int main(int argc, char **argv)
 
 	sendControlDataPacket(fd, Begin, argv[2], fileSize);
 
-	clock_t fileReceiveStart = clock();
+	clock_t fileSendStart = clock();
 
 	sendFileData(fd, fileSize, fullData);
 	
-	clock_t fileReceiveEnd = clock();
-	data_link_statistics.timeSpent = ((double) (fileReceiveEnd - fileReceiveStart)) / CLOCKS_PER_SEC;
+	clock_t fileSendEnd = clock();
+	data_link_statistics.timeSpent = ((double) (fileSendEnd - fileSendStart)) / CLOCKS_PER_SEC;
 
 	sendControlDataPacket(fd, End, argv[2], fileSize);
 

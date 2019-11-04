@@ -15,8 +15,6 @@ int LLREAD(int fd, unsigned char **dataPacket)
 
         readInfoDataPacket(fd, &internalDataPacket, &sizeDataPacket);
 
-        data_link_statistics.receivedFrames++;
-
         //If we received a duplicated datapacket we ignore it and read what is next in the pipe
         if (internalDataPacket[5] < expectedNumSeq)
         {
@@ -93,6 +91,8 @@ int readInfoDataPacket(int fd, unsigned char **dataPacket, int *sizeDataPacket)
         if (n == 5)
         {
             destuffing(SET, sizeSET, dataPacket, sizeDataPacket);
+
+            data_link_statistics.receivedFrames++;
 
             break;
         }

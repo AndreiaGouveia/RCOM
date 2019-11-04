@@ -26,7 +26,7 @@ void printStatistics(){
     printf("No of TimeOuts: %d\n", data_link_statistics.noTimeouts);
     printf("No of RR: %d\n", data_link_statistics.noRR);
     printf("No of REJ: %d\n", data_link_statistics.noREJ);
-    printf("Time Spent sending File: %f\n", data_link_statistics.timeSpent);
+    printf("Time Spent: %f s\n", data_link_statistics.timeSpent);
     printf("\n");
 }
 

@@ -53,14 +53,13 @@ int main(int argc, char **argv)
 
 	printf("Starting to received %s with size %d!\n\n", nameOfFile, sizeOfFile);
 
-	
-	unsigned char * fullFile = malloc(sizeof(unsigned char)*sizeOfFile);
-
 	clock_t fileReceiveStart = clock();
 
+	unsigned char * fullFile = malloc(sizeof(unsigned char)*sizeOfFile);
 	receiveFile(fd, fullFile, sizeOfFile);
 
 	clock_t fileReceiveEnd = clock();
+
 	data_link_statistics.timeSpent = ((double) (fileReceiveEnd - fileReceiveStart)) / CLOCKS_PER_SEC;
 
 	//Final DataPacket
