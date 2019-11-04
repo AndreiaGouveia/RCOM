@@ -32,25 +32,6 @@ int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullDa
 return 0;
 }
 
-unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
-{
-    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 5) * sizeof(unsigned char));
-
-    setBefore[0] = FLAG;
-    setBefore[1] = A;
-    setBefore[2] = CFlag;
-    setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
-
-    for (int i = 1; i <= sizeData; i++)
-    {
-        setBefore[i + 3] = data[i - 1];
-    }
-
-    setBefore[sizeData + 4] = FLAG;
-
-    return setBefore;
-}
-
 long int findSize(FILE *fp)
 {
 
@@ -147,9 +128,7 @@ void sendControlDataPacket(int fd, enum WhichControl cf, char * fileName, int fi
 	int sizeEndData = 6 + (int) strlen((char *) fileName);
 	getControlDataPacket(fileName, cf, fileSize, &endData, &sizeEndData);
 
-	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
-
-	if(LLWRITE(fd,setEnd, 5 + sizeEndData)<0)
+	if(LLWRITE(fd,endData, sizeEndData)<0)
 	{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -171,9 +150,8 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 		int sizefullDataPacket;
 
 		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
-
-		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		
+		if(LLWRITE(fd,fulldataPacket, sizefullDataPacket)<0)
 		{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -200,9 +178,8 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 		int sizefullDataPacket;
 
 		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
-
-		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		
+		if(LLWRITE(fd,fulldataPacket, sizefullDataPacket)<0)
 		{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -212,6 +189,7 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 
         progressBar((double) (counter * 100)/ fileSize);
 	}
+
 }
 
 void progressBar(float percentageReceived){

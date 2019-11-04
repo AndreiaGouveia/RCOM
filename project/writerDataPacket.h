@@ -27,18 +27,6 @@ enum WhichControl { Begin,
 int getControlDataPacket(char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet);
 
 /**
- * Adds flags to the dataPacket
- *
- * @param data data array to be sent
- * @param sizeData size of the data array
- * @param CFlag C flag to be sent
- *
- * @return Returns a data packet ready to be sent
- *
-*/
-unsigned char *getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
-
-/**
  * Reads file
  *
  * @param file file descriptor
