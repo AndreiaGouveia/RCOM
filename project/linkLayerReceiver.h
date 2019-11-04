@@ -10,6 +10,8 @@
 #include <termios.h>
 #include "flags.h"
 
+#include "linkLayer.h"
+
 enum TypeDataPacketI { Start,
                     End_, Data};
 
@@ -53,18 +55,6 @@ void sendResponse(int fd, unsigned char controlBit);
 *
 */
 int destuffing(unsigned char * SET, int sizeSET, unsigned char * * afterDestuffing, int * sizeAfterDestuffing);
-
-/**
-* State machine of an incoming data packet
-* If state is 5 the data packet is completed
-*
-* @param state pointer to an int that represents the state in which an incoming data packet is at
-* @param byte_received the byte received
-* @param SET Pointer to the information data packet (I) array (it is updated if necessary)
-* @param sizeSET Size of the information data packet array so far (it is incremented if necessary)
-* 
-*/
-void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeSET);
 
 /**
 * Checks if the BBC2 in an information data packet (I) is correct

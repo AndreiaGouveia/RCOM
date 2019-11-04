@@ -138,9 +138,7 @@ void sendControlDataPacket(int fd, enum WhichControl cf, char * fileName, int fi
 
 void sendFileData(int fd, int fileSize, unsigned char * fullData){
     	//=====Send FILE Data=====
-	unsigned char *dataPacket;
 	int indice = 0;
-
 	int counter = 0;
 
 	for (int i = 0; i < fileSize; i += SIZE_DATA)
