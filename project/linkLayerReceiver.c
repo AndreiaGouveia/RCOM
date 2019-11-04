@@ -73,7 +73,6 @@ void recivingInformationDataPacket(int fd, unsigned char **dataPacket, int *size
 
 int readInfoDataPacket(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 {
-    int res = 0;
     unsigned char buf[5];
 
     unsigned char SET[255];
@@ -82,7 +81,7 @@ int readInfoDataPacket(int fd, unsigned char **dataPacket, int *sizeDataPacket)
 
     while (1)
     {
-        res = read(fd, buf, 1);
+        read(fd, buf, 1);
 
         stateMachine(&n, buf[0], SET, &sizeSET);
 
@@ -221,7 +220,7 @@ void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], 
         }
         break;
     case 3:
-        if (byte_received == SET[*sizeSET - 1] ^ SET[*sizeSET - 2])
+        if ((byte_received == SET[*sizeSET - 1]) ^ SET[*sizeSET - 2])
         {
             SET[*sizeSET] = byte_received;
             *state = 4;

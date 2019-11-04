@@ -1,4 +1,5 @@
 #include "linkLayerWriter.h"
+#include "linkLayer.h"
 
 //WRITER FUNCTIONS
 
@@ -9,13 +10,18 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 	
 	unsigned char buf[255];
 
-	stuffing(buffer, length);
+	unsigned char *setEnd = getSETDataPacket(buffer, length, _DISC);
+	int setEndSize = length+5;
+
+	stuffing(setEnd, setEndSize);
 
 	int wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-	printf("%d bytes written\n", wrt);
+	//printf("%d bytes written\n", wrt);
 	alarm(3);
 
-	int n = 0;
+	int state = 0;
+	int sizeBuf = 0;
+	unsigned char tmp[1];
 
 	do
 	{
@@ -26,29 +32,30 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 			return -1;
 		}
 
-		int res = read(linkLayerData.fd, &buf[n], 1);
+		int res = read(linkLayerData.fd, tmp, 1);
 
 		//If the read is successful cancels the alarm. If not it continues trying to read
 		if (res == -1)
 			continue;
 
 		//Should Have the stateMachine here to confirm when it reachs the end
+		stateMachine(&state, tmp[0], buf, &sizeBuf);
 
-		if (n != 0 && buf[n] == FLAG)
+		if (state == 5)
 		{
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
 			{
-				printf(" \n ---- REPEAT ----\n");
 				wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-				printf("%d bytesrepeated\n", wrt);
+				
 				alarm(3);
 			}
 			else
 				break;
-			n = -1;
+				
+			state = 0;
+			sizeBuf = 0;
 		}
 
-		n++;
 
 	} while (1);
 
@@ -131,15 +138,33 @@ int readResponse(unsigned char originalFlag, unsigned char cFlag)
 void atende()
 {
 
-	printf("Trying to send again\n");
+	printf("\nTrying to send data packet again\n");
 
 	if (linkLayerData.numTransmissions < 3)
 	{
 
-		int res = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-		printf("%d bytes written\n", res);
+		write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 
 		alarm(3);
 	}
 	linkLayerData.numTransmissions++;
+}
+
+unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
+{
+    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 5) * sizeof(unsigned char));
+
+    setBefore[0] = FLAG;
+    setBefore[1] = A;
+    setBefore[2] = CFlag;
+    setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
+
+    for (int i = 1; i <= sizeData; i++)
+    {
+        setBefore[i + 3] = data[i - 1];
+    }
+
+    setBefore[sizeData + 4] = FLAG;
+
+    return setBefore;
 }

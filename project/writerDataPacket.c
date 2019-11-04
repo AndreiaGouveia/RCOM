@@ -28,25 +28,8 @@ int getFullDataPacket(unsigned char *data, int sizeData, unsigned char ** fullDa
 
     
     getBCC2((*fullData), (* sizefullData) - 1, &(*fullData)[sizeData + 4]);
-}
 
-unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
-{
-    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 5) * sizeof(unsigned char));
-
-    setBefore[0] = FLAG;
-    setBefore[1] = A;
-    setBefore[2] = CFlag;
-    setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
-
-    for (int i = 1; i <= sizeData; i++)
-    {
-        setBefore[i + 3] = data[i - 1];
-    }
-
-    setBefore[sizeData + 4] = FLAG;
-
-    return setBefore;
+return 0;
 }
 
 long int findSize(FILE *fp)
@@ -63,15 +46,16 @@ long int findSize(FILE *fp)
     return res;
 }
 
-int getControlDataPacket(FILE *fileToBeSent, char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
+int getControlDataPacket(char fileName[], enum WhichControl cf, int fileSize, unsigned char **initialSet, int *sizeInitialSet)
 {
 
     //alocating the space for the initialSet
     int sizeOfNumberFileSize = ceil(log2(fileSize)/8.0);
-    int sizeOfName = strlen(fileName) + 1;
+    int sizeOfName = (int) strlen((char *) fileName) + 1;
     (*sizeInitialSet) = (sizeOfNumberFileSize + 6 + sizeOfName) * sizeof(unsigned char);
     (*initialSet) = (unsigned char *)malloc((*sizeInitialSet));
 
+    //check if the control packet is the first or the last
     if (cf == Begin)
     {
         (*initialSet)[0] = 0x02;
@@ -138,15 +122,13 @@ void sendUA(int fd){
 	write(fd, UAControl, sizeUAControl);
 }
 
-void sendControlDataPacket(int fd, enum WhichControl cf, unsigned char * fileName, FILE * file, int fileSize){
+void sendControlDataPacket(int fd, enum WhichControl cf, char * fileName, int fileSize){
 	unsigned char *endData;
 
-	int sizeEndData = 6 + strlen(fileName);
-	getControlDataPacket(file, fileName, cf, fileSize, &endData, &sizeEndData);
+	int sizeEndData = 6 + (int) strlen((char *) fileName);
+	getControlDataPacket(fileName, cf, fileSize, &endData, &sizeEndData);
 
-	unsigned char *setEnd = getSETDataPacket(endData, sizeEndData, _DISC);
-
-	if(LLWRITE(fd,setEnd, 5 + sizeEndData)<0)
+	if(LLWRITE(fd,endData, sizeEndData)<0)
 	{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -168,9 +150,8 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 		int sizefullDataPacket;
 
 		getFullDataPacket(&fullData[i], SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
-
-		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		
+		if(LLWRITE(fd,fulldataPacket, sizefullDataPacket)<0)
 		{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -179,29 +160,26 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 		//prints para ver a quantidade de info que manda!
 		counter += SIZE_DATA;
 
-		for (int j = 0; j < SIZE_DATA + 6; j++) //ciclo para visualizaç~ao do packet
-			printf("%0x ", dataPacket[j]);
-
-		printf("\nWrote so far: %d, %d\n\n", counter, i);
-
 		if ((counter + SIZE_DATA) >= fileSize)
 			break;
 		
 		indice++;
+
+        progressBar((double) (counter * 100)/ fileSize);
 	}
 
-	//In case that the size file is not a multiple of size_data we need to send the remaining bytes
+	//In case that the size file is not a multiple of size_data we need to the remaining bytes
 	if ((fileSize % SIZE_DATA) != 0)
 	{
 
-		indice++;
+        indice++;
+
 		unsigned char * fulldataPacket;
 		int sizefullDataPacket;
 
 		getFullDataPacket(&fullData[fileSize - (fileSize % SIZE_DATA)], fileSize % SIZE_DATA, &fulldataPacket, &sizefullDataPacket, indice);
-		dataPacket = getSETDataPacket(fulldataPacket, sizefullDataPacket, C_SET);
-
-		if(LLWRITE(fd,dataPacket, sizefullDataPacket + 5)<0)
+		
+		if(LLWRITE(fd,fulldataPacket, sizefullDataPacket)<0)
 		{
 		perror("\nLLWRITE went wrong");
 		exit(-1);
@@ -209,11 +187,21 @@ void sendFileData(int fd, int fileSize, unsigned char * fullData){
 
 		counter += fileSize % SIZE_DATA;
 
-		for (int j = 0; j < fileSize % SIZE_DATA + 6; j++)
-			printf("%0x ", dataPacket[j]);
-
-		printf("\nWrote so far: %d\n\n", counter);
+        progressBar((double) (counter * 100)/ fileSize);
 	}
+
+}
+
+void progressBar(float percentageReceived){
+
+	printf("\rCompleted: %f[", percentageReceived);
+
+	for(int i = 0; i < percentageReceived; i += 5){
+		printf("=");
+	}
+	printf("]");
+	
+	fflush (stdout);
 }
 
 

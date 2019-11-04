@@ -112,3 +112,77 @@ int LLCLOSE(int fd)
 	return 0;
 }
 
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeSET)
+{
+    switch (*state)
+    {
+
+    case 0:
+        if (byte_received == FLAG)
+        {
+            SET[*sizeSET] = byte_received;
+            *state = 1;
+
+    (*sizeSET)++;
+        }
+        break;
+    case 1:
+        if (byte_received == A)
+        {
+            SET[*sizeSET] = byte_received;
+            *state = 2;
+
+    (*sizeSET)++;
+        }
+        else if (byte_received != FLAG)
+            *state = 0;
+        break;
+    case 2:
+        if (byte_received == C_SET || byte_received == _SET || byte_received == _DISC || byte_received == _UA 
+	|| (byte_received == _RR || C_SET << 1) || (byte_received == _REJ || C_SET << 1) || byte_received == _RR || byte_received == _REJ)
+        {
+            SET[*sizeSET] = byte_received;
+            *state = 3;
+
+    (*sizeSET)++;
+        }
+        else if (byte_received == FLAG)
+        {
+            *state = 1;
+        }
+        else
+        {
+            *state = 0;
+        }
+        break;
+    case 3:
+        if ((byte_received == SET[*sizeSET - 1]) ^ SET[*sizeSET - 2])
+        {
+            SET[*sizeSET] = byte_received;
+            *state = 4;
+
+    (*sizeSET)++;
+        }
+        else if (byte_received == FLAG)
+        {
+            *state = 1;
+        }
+        else
+            *state = 0;
+        break;
+    case 4:
+        SET[*sizeSET] = byte_received;
+    (*sizeSET)++;
+
+        if (byte_received == FLAG)
+        {
+            *state = 5;
+        }
+        else
+            *state = 4;
+        break;
+    }
+
+
+}
+

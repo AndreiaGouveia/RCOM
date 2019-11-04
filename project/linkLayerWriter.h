@@ -54,3 +54,16 @@ int stuffing(unsigned char *beforeStuffing, int sizeBeforeStuffing);
 int readResponse(unsigned char originalFlag, unsigned char cFlag);
 
 void atende();
+
+/**
+ * Adds flags to the dataPacket
+ *
+ * @param data data array to be sent
+ * @param sizeData size of the data array
+ * @param CFlag C flag to be sent
+ *
+ * @return Returns a data packet ready to be sent
+ *
+*/
+unsigned char *getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag);
+

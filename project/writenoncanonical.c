@@ -13,7 +13,6 @@
 
 int main(int argc, char **argv)
 {
-	int i, sum = 0, speed = 0;
 
 	(void)signal(SIGALRM, atende);
 
@@ -46,15 +45,21 @@ int main(int argc, char **argv)
 
 	}
 	
-	unsigned char *fullData = readFile(file, &fileSize, argv[2]);
+	unsigned char *fullData = readFile(file, &fileSize, (unsigned char *) argv[2]);
 
-	sendControlDataPacket(fd, Begin, argv[2], file, fileSize);
+	printf("Sending Information!\n");
+	printf("Starting to received %s with size %f!\n\n", argv[2], (double) fileSize);
+
+	sendControlDataPacket(fd, Begin, argv[2], fileSize);
 
 	sendFileData(fd, fileSize, fullData);
 
-	sendControlDataPacket(fd, End, argv[2], file, fileSize);
+	sendControlDataPacket(fd, End, argv[2], fileSize);
 
 	sendUA(fd);
+
+
+	printf("\n\nSent File Sucessfuly! Go check out %s!\n", argv[2]);
 
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);

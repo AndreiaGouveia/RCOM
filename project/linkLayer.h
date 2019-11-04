@@ -24,3 +24,5 @@ int LLOPEN( int porta, int flag);
  * @return returns a positive number in case of success, negative otherwise
 */
 int LLCLOSE(int fd);
+
+void stateMachine(int *state, unsigned char byte_received, unsigned char SET[], int *sizeSET);
