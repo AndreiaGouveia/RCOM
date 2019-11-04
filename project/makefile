@@ -44,7 +44,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c $(BUILDDIR)
 
 
 clean:
-	rm -f .depend $(PROGRAM)
+	rm -f .depend $(PROGRAM) $(PROGRAM_1)
 	rm -rf $(BUILDDIR)
 
 $(BUILDDIR):
