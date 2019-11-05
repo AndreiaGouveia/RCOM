@@ -70,6 +70,8 @@ int main(int argc, char **argv)
 
 	printf("\n\nSent File Sucessfuly! Go check out %s!\n", argv[2]);
 
+	sleep(1);
+
 	if (LLCLOSE(fd)==-1)
 		exit(EXIT_FAILURE);
 

@@ -27,7 +27,7 @@
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-#define SIZE_DATA 100 /* size of data in each transaction*/
+#define SIZE_DATA 200 /* size of data in each transaction*/
 
 //Control field of control packets
 #define C_DATA 0x01 /*data transmission*/
@@ -71,7 +71,10 @@ void progressBar(float percentageReceived);
 
 void printStatistics();
 void initStatistics();
+<<<<<<< HEAD
 
 unsigned char *messUpBCC2(unsigned char *packet, int sizePacket);
 
 unsigned char *messUpBCC1(unsigned char *packet, int sizePacket);
+=======
+>>>>>>> 931413d8fda5136bd80f8b56d1d22226d0a53257
