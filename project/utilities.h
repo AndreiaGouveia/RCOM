@@ -2,6 +2,9 @@
 
 #include <stdio.h>
 #include <termios.h>
+#include <stdlib.h>
+ #include <string.h>
+
 
 #define FLAG 0x7e
 #define A 0x03
@@ -44,6 +47,8 @@
 #define N_TRIES_TIMEOUT 3
 #define SECONDS_WAIT_TIMEOUT 3
 
+#define bcc1ErrorPercentage 10
+#define bcc2ErrorPercentage 20
 
 typedef struct {
 	int sentFrames;
@@ -66,3 +71,7 @@ void progressBar(float percentageReceived);
 
 void printStatistics();
 void initStatistics();
+
+unsigned char *messUpBCC2(unsigned char *packet, int sizePacket);
+
+unsigned char *messUpBCC1(unsigned char *packet, int sizePacket);

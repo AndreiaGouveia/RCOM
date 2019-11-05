@@ -3,24 +3,35 @@
 
 //WRITER FUNCTIONS
 
-int LLWRITE(int fd , unsigned char *buffer, int length)
+int sendMessage(int fd, unsigned char *message, int sizeMessage)
+{
+
+	unsigned char * messageMessUp1 = messUpBCC2(message, sizeMessage);
+	unsigned char * messageMessUp2 = messUpBCC2(messageMessUp1, sizeMessage);
+
+	int wrt = write(fd, messageMessUp2, sizeMessage);
+
+	alarm(SECONDS_WAIT_TIMEOUT);
+
+	data_link_statistics.sentFrames++;
+
+	return wrt;
+}
+
+int LLWRITE(int fd, unsigned char *buffer, int length)
 {
 
 	linkLayerData.fd = fd;
 	linkLayerData.numTransmissions = 0;
-	
+
 	unsigned char buf[255];
 
 	unsigned char *setEnd = getSETDataPacket(buffer, length, _DISC);
-	int setEndSize = length+5;
+	int setEndSize = length + 5;
 
 	stuffing(setEnd, setEndSize);
 
-	int wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-	data_link_statistics.sentFrames++;
-
-	//printf("%d bytes written\n", wrt);
-	alarm(SECONDS_WAIT_TIMEOUT);
+	int wrt = sendMessage(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 
 	int state = 0;
 	int sizeBuf = 0;
@@ -49,19 +60,16 @@ int LLWRITE(int fd , unsigned char *buffer, int length)
 
 			if (readResponse(linkLayerData.frame[2], buf[2]) != 0) //caso nao tenha recebido bem
 			{
-				wrt = write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
-				
-				alarm(SECONDS_WAIT_TIMEOUT);
+				wrt = sendMessage(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 
 				data_link_statistics.noREJ++;
 			}
 			else
 				break;
-				
+
 			state = 0;
 			sizeBuf = 0;
 		}
-
 
 	} while (1);
 
@@ -151,31 +159,30 @@ void atende()
 	if (linkLayerData.numTransmissions < N_TRIES_TIMEOUT)
 	{
 
-		write(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
+		sendMessage(linkLayerData.fd, linkLayerData.frame, linkLayerData.sizeFrame);
 		data_link_statistics.sentFrames++;
 
-		alarm(SECONDS_WAIT_TIMEOUT);
 	}
 
 	data_link_statistics.noTimeouts++;
 	linkLayerData.numTransmissions++;
 }
 
-unsigned char *getSETDataPacket(unsigned char *data, int sizeData , unsigned char CFlag)
+unsigned char *getSETDataPacket(unsigned char *data, int sizeData, unsigned char CFlag)
 {
-    unsigned char *setBefore = (unsigned char *)malloc((sizeData + 5) * sizeof(unsigned char));
+	unsigned char *setBefore = (unsigned char *)malloc((sizeData + 5) * sizeof(unsigned char));
 
-    setBefore[0] = FLAG;
-    setBefore[1] = A;
-    setBefore[2] = CFlag;
-    setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
+	setBefore[0] = FLAG;
+	setBefore[1] = A;
+	setBefore[2] = CFlag;
+	setBefore[3] = setBefore[1] ^ setBefore[2]; //BCC1
 
-    for (int i = 1; i <= sizeData; i++)
-    {
-        setBefore[i + 3] = data[i - 1];
-    }
+	for (int i = 1; i <= sizeData; i++)
+	{
+		setBefore[i + 3] = data[i - 1];
+	}
 
-    setBefore[sizeData + 4] = FLAG;
+	setBefore[sizeData + 4] = FLAG;
 
-    return setBefore;
+	return setBefore;
 }
