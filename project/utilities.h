@@ -47,8 +47,8 @@
 #define N_TRIES_TIMEOUT 3
 #define SECONDS_WAIT_TIMEOUT 3
 
-#define bcc1ErrorPercentage 10
-#define bcc2ErrorPercentage 20
+#define bcc1ErrorPercentage 0
+#define bcc2ErrorPercentage 0
 
 typedef struct {
 	int sentFrames;
@@ -71,10 +71,7 @@ void progressBar(float percentageReceived);
 
 void printStatistics();
 void initStatistics();
-<<<<<<< HEAD
 
 unsigned char *messUpBCC2(unsigned char *packet, int sizePacket);
 
 unsigned char *messUpBCC1(unsigned char *packet, int sizePacket);
-=======
->>>>>>> 931413d8fda5136bd80f8b56d1d22226d0a53257
