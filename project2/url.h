@@ -3,12 +3,12 @@
 #include <stdio.h>
 
 typedef struct URL {
-	char user; // string to user
-	char password; // string to password
-	char host; // string to host
-	char ip; // string to IP
-	char path; // string to path
-	char filename; // string to filename
+	char user[256]; // string to user
+	char password[256]; // string to password
+	char host[256]; // string to host
+	char ip[256]; // string to IP
+	char path[256]; // string to path
+	char filename[256]; // string to filename
 	int port; // integer to port
 } url;
 

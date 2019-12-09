@@ -16,9 +16,10 @@ int main(int argc, char **argv)
     initURL(&URL);
 
     char t[] = "ftp://[<user>:<password>@]<host>/<url-path>";
-    parseURL(&URL, t);
+    if (parseURL(&URL, t) != 0)
+        return 1;
 
-    printf("PASSOU!\n");
+    printf("%s %s %s %s\n", URL.user, URL.password, URL.host, URL.path);
 
 
     return 0;
