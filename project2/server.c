@@ -111,8 +111,8 @@ int loginServer(server server, char username[], char password[]){
 
     if(checkNumCode(response, "331") != 0){
 
-        printf("Response was not what was expected: %s\n", response);
-        return 0;
+        printf("Response was not what was expected\n");
+        return 1;
     }
 
     sprintf(command, "PASS %s\n", password);
@@ -127,8 +127,8 @@ int loginServer(server server, char username[], char password[]){
 
     if(checkNumCode(response, "230") != 0){
 
-        printf("Response was not what was expected: %s\n", response);
-        return 0;
+        printf("Response was not what was expected\n");
+        return 1;
     }
 
 }
@@ -150,8 +150,8 @@ int psvModeServer(server * server){
 
     if(checkNumCode(response, "227") != 0){
 
-        printf("Response was not what was expected: %s\n", response);
-        return 0;
+        printf("Response was not what was expected\n");
+        return 1;
     }
 
 
@@ -185,9 +185,43 @@ int retrServer(server server, char path[]) {
     if (readFromServer(server, response, sizeof(response)) != 0)
         return 1;
 
+    if(checkNumCode(response, "150") != 0){
+
+        printf("Response was not what was expected\n");
+        return 1;
+    }
+
 }
 
 int downloadFromServer(server server, char filename[]){
+
+    FILE* file;
+	int received;
+
+	if (!(file = fopen(filename, "w"))) {
+		perror("downloadFromServer");
+		return 1;
+	}
+
+	char buf[1024];
+
+    while ((received = read(server.fd_data_socket, buf, sizeof(buf))) > 0) {
+
+		if (received < 0) {
+			perror("downloadFromServer");
+			return 1;
+		}
+
+		if ((received = fwrite(buf, received, 1, file)) < 0) {
+			perror("downloadFromServer");
+			return 1;
+		}
+	}
+
+	fclose(file);
+	close(server.fd_data_socket);
+
+	return 0;
     
 }
 

@@ -48,6 +48,9 @@ int main(int argc, char **argv)
     if(retrServer(server, URL.path) != 0)
         return 1;
 
+    if(downloadFromServer(server, URL.filename) != 0)
+        return 1;
+
     return 0;
 
 }
