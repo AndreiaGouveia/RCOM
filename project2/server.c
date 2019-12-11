@@ -44,8 +44,6 @@ int clientTCP(char ip[], int port){
 
     int	sockfd;
 	struct	sockaddr_in server_addr;
-	char	buf[] = "Mensagem de teste na travessia da pilha TCP/IP\n";  
-	int	bytes;
 	
 	/*server address handling*/
 	bzero((char*)&server_addr,sizeof(server_addr));
@@ -131,6 +129,8 @@ int loginServer(server server, char username[], char password[]){
         return 1;
     }
 
+    return 0;
+
 }
 
 int psvModeServer(server * server){
@@ -188,6 +188,8 @@ int retrServer(server server, char path[]) {
         printf("Response was not what was expected\n");
         return 1;
     }
+
+    return 0;
 
 }
 
@@ -254,8 +256,6 @@ int disconnectToServer(server server){
 }
 
 int sendToServer(server server, char command[]){
-
-    int bytes;
 
 	if (write(server.fd_control_socket, command, strlen(command)) <= 0) {
 		perror("sendToServer");
