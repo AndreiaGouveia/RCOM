@@ -160,8 +160,6 @@ int psvModeServer(server * server){
     if (getIpFromResponse(response, &ip, &port) != 0)
         return 1;
 
-    printf("IP: %s, port: %d\n", ip, port);
-
     server->fd_data_socket = clientTCP(ip, port);
 
     if(server->fd_data_socket == -1)
@@ -223,6 +221,36 @@ int downloadFromServer(server server, char filename[]){
 
 	return 0;
     
+}
+
+int disconnectToServer(server server){
+
+    char response[1024];
+
+	if (readFromServer(server, response, sizeof(response)) != 0)
+		return 1;
+
+    char command[1024];
+
+    sprintf(command, "QUIT\r\n");
+
+    if(sendToServer(server, command) != 0)
+        return 1;
+
+    printf(" > %s", command);
+
+    if (server.fd_control_socket)
+		close(server.fd_control_socket);
+
+    if(checkNumCode(response, "226") != 0){
+
+        printf("Response was not what was expected\n");
+        return 1;
+    }
+
+	return 0;
+    
+
 }
 
 int sendToServer(server server, char command[]){

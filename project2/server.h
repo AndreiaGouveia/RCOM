@@ -35,4 +35,6 @@ int retrServer(server server, char path[]);
 
 int downloadFromServer(server server, char filename[]);
 
+int disconnectToServer(server server);
+
 int sendToServer(server server, char command[]);

@@ -3,6 +3,7 @@
 #include "url.h"
 #include "server.h"
 
+//ftp://anonymous:1@speedtest.tele2.net/1KB.zip
 int main(int argc, char **argv)
 {
 
@@ -49,6 +50,9 @@ int main(int argc, char **argv)
         return 1;
 
     if(downloadFromServer(server, URL.filename) != 0)
+        return 1;
+
+    if(disconnectToServer(server) != 0)
         return 1;
 
     return 0;
