@@ -2,6 +2,35 @@
 
 #include "string.h"
 
+int getIpFromResponse(char response[], char ** ip, int * port) {
+
+    //227 Entering Passive Mode (193,137,29,15,221,177).
+
+    int ip1, ip2, ip3, ip4;
+	int port1, port2;
+
+	if (sscanf(response, "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d)", 
+        &ip1, &ip2, &ip3, &ip4, &port1, &port2) < 0) {
+
+		printf("Cannot process information to calculating ip and port.\n");
+
+		return 1;
+	}
+
+    //IP
+    if (sprintf((*ip), "%d.%d.%d.%d", ip1, ip2, ip3, ip4) < 0) {
+
+		printf("Cannot form ip address.\n");
+		return 1;
+	}
+
+    //Port
+	(*port) = port1 * 256 + port2;
+
+    return 0;
+
+}
+
 int checkNumCode(char response[], char expected_num_code[]){
 
     if(strncmp(response, expected_num_code, 3) == 0)
@@ -102,6 +131,64 @@ int loginServer(server server, char username[], char password[]){
         return 0;
     }
 
+}
+
+int psvModeServer(server * server){
+
+    char command[1024];
+    char response[1024];
+
+    sprintf(command, "PASV\n");
+
+    if(sendToServer(*server, command) != 0)
+        return 1;
+
+    printf(" > %s", command);
+
+    if (readFromServer(*server, response, sizeof(response)) != 0)
+        return 1;
+
+    if(checkNumCode(response, "227") != 0){
+
+        printf("Response was not what was expected: %s\n", response);
+        return 0;
+    }
+
+
+    char * ip = malloc(1024*sizeof(char));
+    int port;
+    if (getIpFromResponse(response, &ip, &port) != 0)
+        return 1;
+
+    printf("IP: %s, port: %d\n", ip, port);
+
+    server->fd_data_socket = clientTCP(ip, port);
+
+    if(server->fd_data_socket == -1)
+        return 1;
+
+    return 0;
+}
+
+int retrServer(server server, char path[]) {
+
+    char command[1024];
+    char response[1024];
+
+    sprintf(command, "RETR %s\n", path);
+
+    if(sendToServer(server, command) != 0)
+        return 1;
+
+    printf(" > %s", command);
+
+    if (readFromServer(server, response, sizeof(response)) != 0)
+        return 1;
+
+}
+
+int downloadFromServer(server server, char filename[]){
+    
 }
 
 int sendToServer(server server, char command[]){

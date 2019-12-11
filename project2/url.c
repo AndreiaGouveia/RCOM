@@ -16,6 +16,13 @@ if (sscanf(argv, "ftp://[%[^:]:%[^@]@]%[^/]/%s", url->user, url->password, url->
     return 1;
 }
 
+char * ptr = strchr(url->path, '/');
+
+if(ptr == NULL)
+    strcpy(url->filename, url->path);
+else
+    strcpy(url->filename, ptr);
+
 return 0;
 
 }

@@ -35,9 +35,18 @@ int main(int argc, char **argv)
     if (connectToServer(&server, URL.ip, URL.port) != 0)
         return 1;
         
-    if(loginServer(server, URL.user, URL.password))
+
+    //4. Login User    
+    if(loginServer(server, URL.user, URL.password) != 0)
         return 1;
 
+    //5. Entering Passive Mode and Creating a TCP Socket for data
+    if(psvModeServer(&server) != 0)
+        return 1;
+
+    //6. Sending 
+    if(retrServer(server, URL.path) != 0)
+        return 1;
 
     return 0;
 

@@ -17,6 +17,7 @@
 typedef struct SERVER
 {
     int fd_control_socket; // file descriptor to control socket
+     int fd_data_socket; // file descriptor to data socket
 } server;
 
 
@@ -26,7 +27,12 @@ int connectToServer(server * server, char ip[], int port);
 
 int readFromServer(server server, char * response, int size);
 
-
 int loginServer(server server, char username[], char password[]);
+
+int psvModeServer(server * server);
+
+int retrServer(server server, char path[]);
+
+int downloadFromServer(server server, char filename[]);
 
 int sendToServer(server server, char command[]);
