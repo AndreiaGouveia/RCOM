@@ -2,6 +2,15 @@
 
 #include "string.h"
 
+int checkNumCode(char response[], char expected_num_code[]){
+
+    if(strncmp(response, expected_num_code, 3) == 0)
+        return 0;
+
+    return 1;
+
+}
+
 int clientTCP(char ip[], int port){
 
     int	sockfd;
@@ -45,14 +54,14 @@ int connectToServer(server * server, char ip[], int port){
     if (readFromServer(*server, response, sizeof(response)) != 0)
         return 1;
 
-    if(response[0] == '2' && response[1] == '2' && response[2] == '0')
+    if(checkNumCode(response, "220") != 0)
     {
-        printf(" > Service Ready!\n");
-        return 0;
+        printf(" > Service is not ready!\n");
+        return 1;
     }
 
-    printf(" > Service is not ready!");
-    return 1;
+    printf(" > Service is ready!\n");
+    return 0;
 
 }
 
@@ -71,8 +80,8 @@ int loginServer(server server, char username[], char password[]){
     if (readFromServer(server, response, sizeof(response)) != 0)
         return 1;
 
-    if(!(response[0] == '3' && response[1] == '3' && response[2] == '1'))
-    {
+    if(checkNumCode(response, "331") != 0){
+
         printf("Response was not what was expected: %s\n", response);
         return 0;
     }
@@ -87,8 +96,8 @@ int loginServer(server server, char username[], char password[]){
     if (readFromServer(server, response, sizeof(response)) != 0)
         return 1;
 
-    if(!(response[0] == '2' && response[1] == '3' && response[2] == '0'))
-    {
+    if(checkNumCode(response, "230") != 0){
+
         printf("Response was not what was expected: %s\n", response);
         return 0;
     }
