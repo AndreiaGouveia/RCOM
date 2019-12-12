@@ -21,14 +21,9 @@ int main(int argc, char **argv)
     if (parseURL(&URL, argv[1]) != 0)
         return 1;
 
-    printf("Command Line Arguments: %s %s %s %s\n", URL.user, URL.password, URL.host, URL.path);
-
     //2. Get Ip Address (similar to getip.c)
     if(getIpHost(&URL) != 0)
         return 1;
-
-    printf("Ip Address of host: %s\n", URL.ip);
-
 
     server server;
 
@@ -49,9 +44,11 @@ int main(int argc, char **argv)
     if(retrServer(server, URL.path) != 0)
         return 1;
 
+    //7. Download From Server (tcp socket for data)
     if(downloadFromServer(server, URL.filename) != 0)
         return 1;
-
+    
+    //8. Disconnect from server 
     if(disconnectToServer(server) != 0)
         return 1;
 

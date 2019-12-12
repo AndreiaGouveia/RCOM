@@ -267,18 +267,6 @@ int sendToServer(server server, char command[]){
 
 int readFromServer(server server, char * response, int size){
 
-/*
-    int n = 0;
-    int incr = 0;
-
-    while((incr = recv(server.fd_control_socket, &(response[n]), size, 0)) > 0){
-        n += incr;
-    }
-
-	return 0;*/
-
-    //TODO: I THINK THIS IS NOT 100% CORRECT
-
     FILE* fp = fdopen(server.fd_control_socket, "r");
 
 	do {
