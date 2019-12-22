@@ -12,8 +12,15 @@ int parseURL(url* url, char * argv){
 
 if (sscanf(argv, "ftp://%[^:]:%[^@]@%[^/]/%s", url->user, url->password, url->host, url->path) != 4)
 {
-    printf("Wrong Input!\n");
-    return 1;
+
+    if(sscanf(argv, "ftp://%[^/]/%s", url->host, url->path) != 2)
+    { 
+        printf("Usage: %s ftp://[<user>:<password>@]<host>/<url-path>\n", argv);
+        return 1;
+    }
+
+    strcpy(url->user, "anonymous");
+    strcpy(url->password, "1");
 }
 
 char * ptr = strrchr(url->path, '/');
