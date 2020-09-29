@@ -1,5 +1,5 @@
 # RCOM
-Code for the 2 pratical works for the RCOM course.
+Code for exercises and the 2 pratical works for the RCOM course.
 
 ## Project Infos
 * Date: 3nd Year, 1st Semester, 2019/2020
